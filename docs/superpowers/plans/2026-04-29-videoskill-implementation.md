@@ -831,13 +831,16 @@ def extract_audio(*, video_path: Path, audio_path: Path) -> None:
 
 def transcribe_audio(*, audio_path: Path) -> list:
     client = Groq()
-    with open(audio_path, "rb") as f:
-        response = client.audio.transcriptions.create(
-            file=(audio_path.name, f.read()),
-            model="whisper-large-v3",
-            response_format="verbose_json",
-            timestamp_granularities=["segment"],
-        )
+    try:
+        with open(audio_path, "rb") as f:
+            response = client.audio.transcriptions.create(
+                file=(audio_path.name, f.read()),
+                model="whisper-large-v3",
+                response_format="verbose_json",
+                timestamp_granularities=["segment"],
+            )
+    except Exception as e:
+        raise TranscribeError(f"Groq transcription failed: {e}") from e
     return list(response.segments)
 
 
