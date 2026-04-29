@@ -68,3 +68,23 @@ def test_regenerate_replaces_only_marked_section(tmp_path):
     assert "old content" not in text
     assert "### x" in text
     assert "v1" in text
+
+
+def test_render_index_section_empty_library():
+    section = index.render_index_section({})
+    assert "## Library" in section
+    assert "Empty" in section
+
+
+def test_regenerate_creates_claude_md_when_missing(tmp_path):
+    library = tmp_path / "library"
+    library.mkdir()
+    _write_video(library, "x", "v1", title="V1")
+    claude_md = tmp_path / "CLAUDE.md"
+
+    index.regenerate(claude_md_path=claude_md, library_root=library)
+
+    text = claude_md.read_text()
+    assert "VideoSkill library" in text
+    assert "<!-- BEGIN AUTO-INDEX -->" in text
+    assert "v1" in text
