@@ -3,6 +3,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+import pytest
+
 from lib import transcribe
 
 
@@ -58,3 +60,29 @@ def test_transcribe_audio_uses_groq_client(tmp_path, mocker):
     assert args.kwargs["response_format"] == "verbose_json"
     assert args.kwargs["timestamp_granularities"] == ["segment"]
     assert segments == fake_response.segments
+
+
+def test_extract_audio_raises_on_ffmpeg_failure(tmp_path, mocker):
+    video = tmp_path / "v.mp4"
+    video.touch()
+    audio = tmp_path / ".audio.mp3"
+
+    mocker.patch(
+        "lib.transcribe.subprocess.run",
+        side_effect=subprocess.CalledProcessError(1, "ffmpeg", stderr="ERROR: no such file"),
+    )
+
+    with pytest.raises(transcribe.TranscribeError, match="no such file"):
+        transcribe.extract_audio(video_path=video, audio_path=audio)
+
+
+def test_transcribe_audio_wraps_groq_errors(tmp_path, mocker):
+    audio = tmp_path / "a.mp3"
+    audio.write_bytes(b"fake")
+
+    fake_client = MagicMock()
+    fake_client.audio.transcriptions.create.side_effect = RuntimeError("groq exploded")
+    mocker.patch("lib.transcribe.Groq", return_value=fake_client)
+
+    with pytest.raises(transcribe.TranscribeError, match="groq exploded"):
+        transcribe.transcribe_audio(audio_path=audio)
