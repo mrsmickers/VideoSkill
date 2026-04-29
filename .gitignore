@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Project-specific
+library/
+!library/.gitkeep
+.logs/
+!.logs/.gitkeep
+
+# Temp files inside slug folders (in case library/ is ever ungitignored)
+**/.source.*
+**/.audio.*
+**/.work-state.json
+
+# OS
+.DS_Store
