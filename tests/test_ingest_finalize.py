@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import ingest as ingest_cli
 
@@ -82,4 +81,37 @@ def test_finalize_errors_when_state_missing(tmp_path):
         "--claude-md", str(tmp_path / "CLAUDE.md"),
         "--library", str(tmp_path / "library"),
     ])
-    assert rc != 0
+    assert rc == 5
+
+
+def test_finalize_empty_frames_skips_extraction(tmp_path, mocker):
+    slug = _seed_prepared_slug(tmp_path)
+
+    extract_mock = mocker.patch("ingest.frames.extract_frames")
+
+    rc = ingest_cli.run([
+        "finalize",
+        str(slug),
+        "--frames", "",
+        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--library", str(tmp_path / "library"),
+    ])
+    assert rc == 0
+
+    # extract_frames was NOT called
+    extract_mock.assert_not_called()
+
+    # meta.json still written
+    meta_data = json.loads((slug / "meta.json").read_text())
+    assert meta_data["url"] == "https://youtu.be/abc"
+
+    # cleanup still happened
+    assert not (slug / ".source.mp4").exists()
+    assert not (slug / ".work-state.json").exists()
+
+    # frames/ directory was NOT created (no extraction happened)
+    assert not (slug / "frames").exists()
+
+    # CLAUDE.md still regenerated
+    claude_text = (tmp_path / "CLAUDE.md").read_text()
+    assert "kpoi-talk" in claude_text
