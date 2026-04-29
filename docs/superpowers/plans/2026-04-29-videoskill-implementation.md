@@ -167,15 +167,15 @@ which bws && bws --version
 
 If `which` returns nothing, stop and tell Simon: *"`bws` CLI not on PATH. Install with `brew install bitwarden-secrets-manager` then re-run setup with the access token configured."*
 
-- [ ] **Step 2: Verify `Grok_API_Key` exists in bws**
+- [ ] **Step 2: Verify `Groq API Key` exists in bws**
 
 ```bash
-bws secret list --output json | jq -r '.[] | select(.key=="Grok_API_Key") | .key + " (id=" + .id + ")"'
+bws secret list --output json | jq -r '.[] | select(.key=="Groq API Key") | .key + " (id=" + .id + ")"'
 ```
 
-Expected: one line like `Grok_API_Key (id=<uuid>)`.
+Expected: one line like `Groq API Key (id=<uuid>)`.
 
-If empty: stop and ask Simon: *"No bws secret named `Grok_API_Key` found. Could you check the secret name? You can list all secrets with `bws secret list`."*
+If empty: stop and ask Simon: *"No bws secret named `Groq API Key` found. Could you check the secret name? You can list all secrets with `bws secret list`."*
 
 - [ ] **Step 3: Write `load-secrets.sh`**
 
@@ -185,11 +185,13 @@ Create `~/Projects/VideoSkill/load-secrets.sh` with:
 #!/usr/bin/env bash
 # Source this script (don't execute it) to populate the env with secrets fetched from bws.
 # Usage:  source ./load-secrets.sh
-
-set -euo pipefail
+#
+# Note: NO `set -euo pipefail` here — sourced scripts must not impose strict-mode
+# options on the parent shell (it would persist for the rest of the user's session).
+# Errors are handled explicitly per branch below.
 
 if ! command -v bws >/dev/null 2>&1; then
-  echo "ERROR: bws CLI not on PATH. brew install bitwarden-secrets-manager" >&2
+  echo "ERROR: bws CLI not on PATH. Install: https://bitwarden.com/help/secrets-manager-cli/" >&2
   return 1 2>/dev/null || exit 1
 fi
 
@@ -198,11 +200,11 @@ if ! command -v jq >/dev/null 2>&1; then
   return 1 2>/dev/null || exit 1
 fi
 
-# Note: bws stores the Groq key under the (mis)spelled name 'Grok_API_Key'. Preserved as-is.
-_groq_value=$(bws secret list --output json | jq -r '.[] | select(.key=="Grok_API_Key") | .value' | head -n 1)
+# bws stores the Groq whisper key under the entry name 'Groq API Key' (with spaces).
+_groq_value=$(bws secret list --output json | jq -r '.[] | select(.key=="Groq API Key") | .value' | head -n 1)
 
 if [ -z "${_groq_value:-}" ]; then
-  echo "ERROR: secret 'Grok_API_Key' not found in bws" >&2
+  echo "ERROR: secret 'Groq API Key' not found in bws" >&2
   unset _groq_value
   return 1 2>/dev/null || exit 1
 fi
@@ -210,7 +212,7 @@ fi
 export GROQ_API_KEY="$_groq_value"
 unset _groq_value
 
-echo "GROQ_API_KEY loaded from bws (Grok_API_Key)."
+echo "GROQ_API_KEY loaded from bws (Groq API Key)."
 ```
 
 - [ ] **Step 4: Make executable**
@@ -225,7 +227,7 @@ chmod +x ~/Projects/VideoSkill/load-secrets.sh
 ( cd ~/Projects/VideoSkill && source ./load-secrets.sh && [ -n "${GROQ_API_KEY:-}" ] && echo "OK: key length=${#GROQ_API_KEY}" )
 ```
 
-Expected: `GROQ_API_KEY loaded from bws (Grok_API_Key).` followed by `OK: key length=N` where N is plausibly between 30 and 100.
+Expected: `GROQ_API_KEY loaded from bws (Groq API Key).` followed by `OK: key length=N` where N is plausibly between 30 and 100.
 
 If it errors about jq, install: `brew install jq` and retry.
 
@@ -1808,7 +1810,7 @@ If Simon picks: use that URL. Otherwise: search Daniel Priestly's YouTube channe
 cd ~/Projects/VideoSkill && source ./load-secrets.sh && source .venv/bin/activate && [ -n "${GROQ_API_KEY:-}" ] && echo "ready"
 ```
 
-Expected: `GROQ_API_KEY loaded from bws (Grok_API_Key).` then `ready`.
+Expected: `GROQ_API_KEY loaded from bws (Groq API Key).` then `ready`.
 
 - [ ] **Step 3: Run `prepare`**
 
