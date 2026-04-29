@@ -9,12 +9,11 @@ FALLBACK_SLUG = "untitled"
 
 
 def slug_for_title(title: str) -> str:
-    s = slugify(title or "", max_length=MAX_SLUG_LEN, word_boundary=True, save_order=True)
-    # Collapse multiple hyphens
-    s = re.sub(r"-{2,}", "-", s)
-    # Remove hyphens between a letter and a single letter (e.g. "p-s" -> "ps")
-    s = re.sub(r"([a-z])-([a-z])(-|$)", r"\1\2\3", s)
-    s = s.strip("-")
+    # Pre-process possessives/contractions so "P's" becomes "Ps", not "p-s".
+    t = re.sub(r"'s\b", "s", title or "")
+    t = re.sub(r"'", "", t)
+    s = slugify(t, max_length=MAX_SLUG_LEN, word_boundary=True, save_order=True)
+    s = re.sub(r"-{2,}", "-", s).strip("-")
     return s or FALLBACK_SLUG
 
 
