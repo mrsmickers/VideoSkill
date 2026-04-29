@@ -2,10 +2,8 @@
 # Source this script (don't execute it) to populate the env with secrets fetched from bws.
 # Usage:  source ./load-secrets.sh
 
-set -euo pipefail
-
 if ! command -v bws >/dev/null 2>&1; then
-  echo "ERROR: bws CLI not on PATH. brew install bitwarden-secrets-manager" >&2
+  echo "ERROR: bws CLI not on PATH. Install: https://bitwarden.com/help/secrets-manager-cli/" >&2
   return 1 2>/dev/null || exit 1
 fi
 
