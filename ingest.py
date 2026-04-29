@@ -1,6 +1,7 @@
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import download, frames, index, meta, paths, transcribe
@@ -90,8 +91,52 @@ def _cmd_prepare(args: argparse.Namespace) -> int:
 
 
 def _cmd_finalize(args: argparse.Namespace) -> int:
-    # Implemented in Task 10.
-    raise NotImplementedError("finalize subcommand pending Task 10")
+    slug_folder = Path(args.slug_folder).resolve()
+    state_path = slug_folder / ".work-state.json"
+    if not state_path.exists():
+        print(f"ERROR: no .work-state.json at {state_path} — was prepare run?", file=sys.stderr)
+        return 5
+
+    state = json.loads(state_path.read_text())
+    source_video = Path(state["source_video"])
+    source_audio = Path(state["source_audio"])
+
+    raw = (args.frames or "").strip()
+    timestamps = [t.strip() for t in raw.split(",") if t.strip()] if raw else []
+
+    if timestamps:
+        try:
+            frames.extract_frames(
+                video_path=source_video,
+                timestamps=timestamps,
+                out_dir=slug_folder / "frames",
+            )
+        except (frames.FrameExtractError, ValueError) as e:
+            print(f"ERROR: frame extraction failed: {e}", file=sys.stderr)
+            return 6
+
+    meta.write(
+        folder=slug_folder,
+        url=state["url"],
+        title=state["title"],
+        channel=state["channel"],
+        duration_seconds=int(state["duration_seconds"]),
+        ingest_date=datetime.now(timezone.utc),
+        source_hash=meta.hash_url(state["url"]),
+    )
+
+    # Cleanup.
+    for p in (source_video, source_audio, state_path):
+        if p.exists():
+            p.unlink()
+
+    # Regenerate CLAUDE.md.
+    library_root = Path(args.library).resolve()
+    claude_md = Path(args.claude_md).resolve()
+    index.regenerate(claude_md_path=claude_md, library_root=library_root)
+
+    print(f"finalized: {slug_folder}")
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -107,6 +152,8 @@ def build_parser() -> argparse.ArgumentParser:
     f = sub.add_parser("finalize", help="extract frames, write meta.json, regenerate index, cleanup")
     f.add_argument("slug_folder")
     f.add_argument("--frames", default="", help="comma-separated mm:ss timestamps")
+    f.add_argument("--library", default=str(Path(__file__).parent / "library"))
+    f.add_argument("--claude-md", default=str(Path(__file__).parent / "CLAUDE.md"))
     f.set_defaults(func=_cmd_finalize)
 
     return parser
