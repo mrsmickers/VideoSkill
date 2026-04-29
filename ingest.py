@@ -1,7 +1,6 @@
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import download, frames, index, meta, paths, transcribe
@@ -16,6 +15,8 @@ def _cmd_prepare(args: argparse.Namespace) -> int:
     sub_dir = library_root / subfolder
     if sub_dir.exists():
         for existing in sub_dir.iterdir():
+            if not existing.is_dir():
+                continue
             mp = existing / "meta.json"
             if mp.exists():
                 existing_meta = json.loads(mp.read_text())
