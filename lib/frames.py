@@ -34,7 +34,7 @@ def extract_frames(
 ) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
-    for raw in timestamps:
+    for raw in dict.fromkeys(timestamps):
         seconds = parse_timestamp(raw)
         out_path = out_dir / format_frame_filename(seconds)
         cmd = [
