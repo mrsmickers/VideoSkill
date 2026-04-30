@@ -59,7 +59,30 @@ def test_transcribe_audio_uses_groq_client(tmp_path, mocker):
     assert args.kwargs["model"] == "whisper-large-v3"
     assert args.kwargs["response_format"] == "verbose_json"
     assert args.kwargs["timestamp_granularities"] == ["segment"]
-    assert segments == fake_response.segments
+    assert segments == [transcribe.Segment(start=0.0, end=1.0, text="Hi.")]
+
+
+def test_transcribe_audio_handles_dict_segments_from_groq(tmp_path, mocker):
+    """Real Groq SDK returns segments as dicts, not objects. Verify we normalise."""
+    audio = tmp_path / "a.mp3"
+    audio.write_bytes(b"fake")
+
+    fake_response = SimpleNamespace(
+        segments=[
+            {"start": 0.0, "end": 2.5, "text": "Hello."},
+            {"start": 2.5, "end": 5.0, "text": "World."},
+        ]
+    )
+    fake_client = MagicMock()
+    fake_client.audio.transcriptions.create.return_value = fake_response
+    mocker.patch("lib.transcribe.Groq", return_value=fake_client)
+
+    segments = transcribe.transcribe_audio(audio_path=audio)
+
+    assert segments == [
+        transcribe.Segment(start=0.0, end=2.5, text="Hello."),
+        transcribe.Segment(start=2.5, end=5.0, text="World."),
+    ]
 
 
 def test_extract_audio_raises_on_ffmpeg_failure(tmp_path, mocker):
