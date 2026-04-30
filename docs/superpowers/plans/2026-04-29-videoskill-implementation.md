@@ -803,13 +803,19 @@ Create `~/Projects/VideoSkill/lib/transcribe.py` with:
 ```python
 import subprocess
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, NamedTuple
 
 from groq import Groq
 
 
 class TranscribeError(RuntimeError):
     pass
+
+
+class Segment(NamedTuple):
+    start: float
+    end: float
+    text: str
 
 
 def extract_audio(*, video_path: Path, audio_path: Path) -> None:
@@ -829,7 +835,7 @@ def extract_audio(*, video_path: Path, audio_path: Path) -> None:
         raise TranscribeError(f"ffmpeg audio extract failed: {e.stderr or e.stdout}") from e
 
 
-def transcribe_audio(*, audio_path: Path) -> list:
+def transcribe_audio(*, audio_path: Path) -> list[Segment]:
     client = Groq()
     try:
         with open(audio_path, "rb") as f:
@@ -841,7 +847,14 @@ def transcribe_audio(*, audio_path: Path) -> list:
             )
     except Exception as e:
         raise TranscribeError(f"Groq transcription failed: {e}") from e
-    return list(response.segments)
+    return [_segment_from_raw(s) for s in response.segments]
+
+
+def _segment_from_raw(raw) -> Segment:
+    """Normalise a Groq response segment (dict or object) into a Segment."""
+    if isinstance(raw, dict):
+        return Segment(start=float(raw["start"]), end=float(raw["end"]), text=str(raw["text"]))
+    return Segment(start=float(raw.start), end=float(raw.end), text=str(raw.text))
 
 
 def format_transcript(segments: Iterable) -> str:
