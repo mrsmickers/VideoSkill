@@ -1,20 +1,32 @@
 # VideoSkill
 
-Build a personal library of expert YouTube content, ingested into per-video
-folders that a fresh Claude Code chat can browse and quote from.
+Turn almost any public video into a fully-cited knowledge artifact:
+timestamped transcript, structured summary, extracted methodology with
+verbatim quotes, and key frames at the moments that mattered.
 
-Each video lives at `library/<creator-or-topic>/<slug>/` with:
+Think of it as Loom's AI SOP feature with two big differences:
 
-- `meta.json` — url, title, channel, duration, ingest date
-- `transcript.md` — full timestamped transcript
+1. **You don't record the video — you give it a URL.** Works on most public
+   video sources, not just YouTube: Vimeo, Twitter/X, TikTok, LinkedIn,
+   Twitch, conference recordings. Anything `yt-dlp` can fetch.
+2. **The output is plain markdown + JPGs you own.** No SaaS lock-in. Future
+   Claude Code sessions in this folder can grep across the library to answer
+   questions, write SOPs, build new skills, or publish straight to Notion
+   (with frames hosted on your own Cloudflare R2 bucket — one shell command).
+
+Each ingested video lives at `library/<creator-or-topic>/<slug>/` with:
+
+- `transcript.md` — full timestamped transcript (Whisper-large-v3)
 - `summary.md` — short overview + key points
-- `extracted.md` — frameworks, templates, quotes, do's/don'ts
-- `frames/` — JPG frames at the timestamps that mattered
+- `extracted.md` — frameworks, templates, verbatim quotes, do's/don'ts
+- `frames/` — JPG frames at the timestamps that mattered (auto-capped at
+  1600px so Claude can review many in one go)
+- `meta.json` — url, title, channel, duration, ingest date
 
-The mechanical work (download, transcribe, frame extract) is Python. The
-cognitive work (write the summary, pick frame timestamps) is done by the
-calling Claude Code session — meaning it's covered by your Claude subscription
-rather than metered API calls.
+The mechanical work (download, transcribe, extract frames) is Python. The
+cognitive work (write the summary, pick frame timestamps, compose SOPs)
+runs inside your Claude Code session — covered by your subscription, not
+metered API calls.
 
 ## Prerequisites
 

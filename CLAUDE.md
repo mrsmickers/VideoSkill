@@ -63,9 +63,10 @@ read+write on that bucket. Fill the `VIDEOSKILL_R2_*` vars in `.env` (see
 
 ### 6. Smoke-test on a short video
 
-Before a big batch, ingest one 5–10 minute YouTube video to validate the
-pipeline. Ask the user for a URL, then follow **How to ingest new content**
-below.
+Before a big batch, ingest one 5–10 minute video to validate the pipeline.
+Any public video source `yt-dlp` supports works — YouTube, Vimeo, Twitter/X,
+TikTok, LinkedIn, Twitch, conference recordings, etc. Ask the user for a URL,
+then follow **How to ingest new content** below.
 
 ---
 
