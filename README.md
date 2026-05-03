@@ -108,6 +108,16 @@ If you're unsure, start with the Notion path — it's faster to set up,
 covers private content, and the Markdown SOP draft Claude composes can
 embed images either way.
 
+> **Caveat for agents on a Notion MCP** (e.g. Claude Cowork's bundled
+> Notion connector, or the standard Notion MCP server): the MCPs available
+> today only expose the pages / blocks API, which embeds images via
+> Markdown `![alt](url)` and so needs a public URL. They don't surface
+> Notion's `/v1/file_uploads` endpoint. If your agent environment can run
+> Python locally (e.g. Claude Code from a terminal), `scripts/upload-frames-to-notion.py`
+> bypasses the MCP and uses file_uploads directly. If it can't (most hosted
+> agent environments), you're on Recipe B (R2) — and remember that means
+> the source video has to be public.
+
 ### Recipe A — Notion file uploads (default)
 
 1. Create an internal Notion integration at
