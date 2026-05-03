@@ -14,6 +14,7 @@ library/
 **/.source.*
 **/.audio.*
 **/.work-state.json
+**/.staging/
 
 # OS
 .DS_Store

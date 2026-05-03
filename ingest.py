@@ -59,7 +59,7 @@ def _cmd_prepare(args: argparse.Namespace) -> int:
 
     try:
         segments = transcribe.transcribe_audio(audio_path=source_audio)
-    except Exception as e:
+    except transcribe.TranscribeError as e:
         print(f"ERROR: transcription failed: {e}", file=sys.stderr)
         return 4
 
