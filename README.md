@@ -1,5 +1,8 @@
 # VideoSkill
 
+[![Tests](https://github.com/mrsmickers/VideoSkill/actions/workflows/test.yml/badge.svg)](https://github.com/mrsmickers/VideoSkill/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Turn almost any public video into a fully-cited knowledge artifact:
 timestamped transcript, structured summary, extracted methodology with
 verbatim quotes, and key frames at the moments that mattered.

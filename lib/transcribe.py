@@ -1,8 +1,16 @@
+import random
 import subprocess
+import time
 from pathlib import Path
 from typing import Iterable, NamedTuple
 
-from groq import Groq
+from groq import (
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    Groq,
+    RateLimitError,
+)
 
 
 class TranscribeError(RuntimeError):
@@ -13,6 +21,12 @@ class Segment(NamedTuple):
     start: float
     end: float
     text: str
+
+
+_RETRY_EXCEPTIONS = (RateLimitError, APIConnectionError, APITimeoutError)
+_MAX_ATTEMPTS = 5
+_BASE_DELAY_SECONDS = 1.0
+_MAX_DELAY_SECONDS = 60.0
 
 
 def extract_audio(*, video_path: Path, audio_path: Path) -> None:
@@ -36,15 +50,58 @@ def transcribe_audio(*, audio_path: Path) -> list[Segment]:
     client = Groq()
     try:
         with open(audio_path, "rb") as f:
-            response = client.audio.transcriptions.create(
-                file=(audio_path.name, f.read()),
+            audio_bytes = f.read()
+        response = _call_with_retry(
+            lambda: client.audio.transcriptions.create(
+                file=(audio_path.name, audio_bytes),
                 model="whisper-large-v3",
                 response_format="verbose_json",
                 timestamp_granularities=["segment"],
             )
+        )
     except Exception as e:
         raise TranscribeError(f"Groq transcription failed: {e}") from e
     return [_segment_from_raw(s) for s in response.segments]
+
+
+def _call_with_retry(func):
+    """Run func() with retry on transient Groq errors (429, 5xx, network).
+    Honours Retry-After when present; otherwise exponential backoff with jitter.
+    """
+    for attempt in range(1, _MAX_ATTEMPTS + 1):
+        try:
+            return func()
+        except _RETRY_EXCEPTIONS as e:
+            if attempt == _MAX_ATTEMPTS:
+                raise
+            time.sleep(_compute_delay(e, attempt))
+        except APIStatusError as e:
+            # Retry only on server-side errors (5xx); client errors propagate.
+            if attempt == _MAX_ATTEMPTS or getattr(e, "status_code", 0) < 500:
+                raise
+            time.sleep(_compute_delay(e, attempt))
+
+
+def _compute_delay(exc: Exception, attempt: int) -> float:
+    retry_after = _retry_after_seconds(exc)
+    if retry_after is not None:
+        return min(retry_after, _MAX_DELAY_SECONDS)
+    delay = min(_BASE_DELAY_SECONDS * (2 ** (attempt - 1)), _MAX_DELAY_SECONDS)
+    return delay + random.uniform(0, delay * 0.25)  # jitter so parallel callers don't sync
+
+
+def _retry_after_seconds(exc: Exception) -> float | None:
+    response = getattr(exc, "response", None)
+    if response is None:
+        return None
+    headers = getattr(response, "headers", None) or {}
+    raw = headers.get("retry-after") or headers.get("Retry-After")
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
 
 
 def _segment_from_raw(raw) -> Segment:

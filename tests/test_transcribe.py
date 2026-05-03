@@ -109,3 +109,80 @@ def test_transcribe_audio_wraps_groq_errors(tmp_path, mocker):
 
     with pytest.raises(transcribe.TranscribeError, match="groq exploded"):
         transcribe.transcribe_audio(audio_path=audio)
+
+
+def test_transcribe_audio_retries_on_rate_limit(tmp_path, mocker):
+    """A real Groq RateLimitError twice, then success — verify the retry."""
+    from groq import RateLimitError
+
+    audio = tmp_path / "a.mp3"
+    audio.write_bytes(b"fake")
+
+    # RateLimitError requires a response object; use a MagicMock with no Retry-After
+    # so the helper falls back to exponential backoff (which we mock to be instant).
+    fake_http_resp = MagicMock()
+    fake_http_resp.headers = {}
+    rate_limit = RateLimitError(message="429", response=fake_http_resp, body=None)
+
+    fake_response = SimpleNamespace(
+        segments=[SimpleNamespace(start=0.0, end=1.0, text="Hi.")]
+    )
+    fake_client = MagicMock()
+    fake_client.audio.transcriptions.create.side_effect = [
+        rate_limit, rate_limit, fake_response,
+    ]
+    mocker.patch("lib.transcribe.Groq", return_value=fake_client)
+    sleep_mock = mocker.patch("lib.transcribe.time.sleep")
+
+    segments = transcribe.transcribe_audio(audio_path=audio)
+
+    assert fake_client.audio.transcriptions.create.call_count == 3
+    assert sleep_mock.call_count == 2  # one sleep per retry, none after success
+    assert segments == [transcribe.Segment(start=0.0, end=1.0, text="Hi.")]
+
+
+def test_transcribe_audio_honours_retry_after_header(tmp_path, mocker):
+    """If the rate-limit response includes Retry-After, sleep that long (capped)."""
+    from groq import RateLimitError
+
+    audio = tmp_path / "a.mp3"
+    audio.write_bytes(b"fake")
+
+    fake_http_resp = MagicMock()
+    fake_http_resp.headers = {"Retry-After": "7"}
+    rate_limit = RateLimitError(message="429", response=fake_http_resp, body=None)
+
+    fake_response = SimpleNamespace(
+        segments=[SimpleNamespace(start=0.0, end=1.0, text="Hi.")]
+    )
+    fake_client = MagicMock()
+    fake_client.audio.transcriptions.create.side_effect = [rate_limit, fake_response]
+    mocker.patch("lib.transcribe.Groq", return_value=fake_client)
+    sleep_mock = mocker.patch("lib.transcribe.time.sleep")
+
+    transcribe.transcribe_audio(audio_path=audio)
+
+    sleep_mock.assert_called_once_with(7.0)
+
+
+def test_transcribe_audio_gives_up_after_max_attempts(tmp_path, mocker):
+    """Persistent rate limiting eventually surfaces as TranscribeError."""
+    from groq import RateLimitError
+
+    audio = tmp_path / "a.mp3"
+    audio.write_bytes(b"fake")
+
+    fake_http_resp = MagicMock()
+    fake_http_resp.headers = {}
+    rate_limit = RateLimitError(message="429", response=fake_http_resp, body=None)
+
+    fake_client = MagicMock()
+    fake_client.audio.transcriptions.create.side_effect = rate_limit
+    mocker.patch("lib.transcribe.Groq", return_value=fake_client)
+    mocker.patch("lib.transcribe.time.sleep")
+
+    with pytest.raises(transcribe.TranscribeError, match="429"):
+        transcribe.transcribe_audio(audio_path=audio)
+
+    # Default max_attempts is 5
+    assert fake_client.audio.transcriptions.create.call_count == 5
