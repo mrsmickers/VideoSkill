@@ -1,6 +1,6 @@
 """
-Upload a slug folder's frames to the personal Cloudflare R2 bucket 'videoskill',
-returning a JSON map of filename -> public URL ready for embedding in Notion.
+Upload a slug folder's frames to a Cloudflare R2 bucket and emit a JSON map of
+filename -> public URL ready for embedding in Notion (or anywhere else).
 
 Usage:
     .venv/bin/python scripts/upload-frames-to-r2.py <slug-folder-path>
@@ -9,20 +9,19 @@ Example:
     .venv/bin/python scripts/upload-frames-to-r2.py \
         library/daniel-priestley/why-you-must-build-a-youtube-channel
 
-Requirements:
-    - boto3 (already in requirements.txt)
-    - Two env vars: VIDEOSKILL_R2_ACCESS_KEY_ID and VIDEOSKILL_R2_SECRET_ACCESS_KEY
-      (Simon: stash these in a `.env.local` file or 1Password and source them.)
+Requires four env vars:
+    VIDEOSKILL_R2_ACCOUNT_ID         Cloudflare account ID
+    VIDEOSKILL_R2_BUCKET             R2 bucket name (e.g. "videoskill")
+    VIDEOSKILL_R2_PUBLIC_DOMAIN      Public r2.dev (or custom) domain serving the bucket
+                                     (e.g. "pub-XXXXXXXX.r2.dev")
+    VIDEOSKILL_R2_ACCESS_KEY_ID      R2 access key ID
+    VIDEOSKILL_R2_SECRET_ACCESS_KEY  R2 secret access key
 
-Bucket setup (one-off, already done 2026-05-03):
-    - Bucket: 'videoskill' on personal CF account (<MAINTAINER_DOMAIN>, ID <CF_ACCOUNT_ID_PREFIX>...)
-    - Public domain: <R2_PUBLIC_DOMAIN>
-    - Created via CF API; r2.dev managed-domain enabled.
-
-Auth note: R2 access keys are derived from a CF API token named
-'<R2_TOKEN_NAME>' (id <R2_ACCESS_KEY_ID>). The S3
-secret_access_key is sha256(token_value). To re-derive, fetch the token value
-from wherever it was stored and run sha256 over it.
+R2 setup (one-off):
+    1. Create a bucket in the Cloudflare dashboard.
+    2. Enable the managed `r2.dev` public domain (or attach a custom domain).
+    3. Create an R2 API token with read+write on that bucket; the token gives
+       you the access key ID and secret access key.
 """
 import json
 import os
@@ -32,19 +31,25 @@ from pathlib import Path
 import boto3
 
 
-ACCOUNT_ID = "<CF_ACCOUNT_ID>"
-BUCKET = "videoskill"
-PUBLIC_DOMAIN = "<R2_PUBLIC_DOMAIN>"
-S3_ENDPOINT = f"https://{ACCOUNT_ID}.r2.cloudflarestorage.com"
-
-
 def main(slug_folder_arg: str) -> int:
+    account_id = os.environ.get("VIDEOSKILL_R2_ACCOUNT_ID")
+    bucket = os.environ.get("VIDEOSKILL_R2_BUCKET")
+    public_domain = os.environ.get("VIDEOSKILL_R2_PUBLIC_DOMAIN")
     access_key = os.environ.get("VIDEOSKILL_R2_ACCESS_KEY_ID")
     secret_key = os.environ.get("VIDEOSKILL_R2_SECRET_ACCESS_KEY")
-    if not access_key or not secret_key:
+    missing = [
+        name for name, value in [
+            ("VIDEOSKILL_R2_ACCOUNT_ID", account_id),
+            ("VIDEOSKILL_R2_BUCKET", bucket),
+            ("VIDEOSKILL_R2_PUBLIC_DOMAIN", public_domain),
+            ("VIDEOSKILL_R2_ACCESS_KEY_ID", access_key),
+            ("VIDEOSKILL_R2_SECRET_ACCESS_KEY", secret_key),
+        ] if not value
+    ]
+    if missing:
         print(
-            "ERROR: Set VIDEOSKILL_R2_ACCESS_KEY_ID and "
-            "VIDEOSKILL_R2_SECRET_ACCESS_KEY in env first.",
+            f"ERROR: missing env vars: {', '.join(missing)}. "
+            f"See module docstring.",
             file=sys.stderr,
         )
         return 1
@@ -71,7 +76,7 @@ def main(slug_folder_arg: str) -> int:
 
     s3 = boto3.client(
         "s3",
-        endpoint_url=S3_ENDPOINT,
+        endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
         region_name="auto",
@@ -82,14 +87,14 @@ def main(slug_folder_arg: str) -> int:
         key = f"{key_prefix}/frames/{jpg.name}"
         s3.upload_file(
             str(jpg),
-            BUCKET,
+            bucket,
             key,
             ExtraArgs={
                 "ContentType": "image/jpeg",
                 "CacheControl": "public, max-age=31536000",
             },
         )
-        urls[jpg.name] = f"https://{PUBLIC_DOMAIN}/{key}"
+        urls[jpg.name] = f"https://{public_domain}/{key}"
         print(f"uploaded: {jpg.name}", file=sys.stderr)
 
     # Print the URL map as JSON to stdout so it's easy to consume.
