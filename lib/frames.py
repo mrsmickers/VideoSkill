@@ -43,6 +43,9 @@ def extract_frames(
             "-i", str(video_path),
             "-frames:v", "1",
             "-q:v", "2",
+            # Cap longest side at 1600px so frames stay under Anthropic's 2000px
+            # many-image dimension limit when reviewed in batches.
+            "-vf", "scale='min(1600,iw)':'min(1600,ih)':force_original_aspect_ratio=decrease",
             str(out_path),
         ]
         try:

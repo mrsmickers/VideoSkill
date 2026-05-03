@@ -46,6 +46,11 @@ def test_extract_frames_invokes_ffmpeg_per_timestamp(tmp_path, mocker):
     assert "30" in cmd  # parsed seconds
     assert "-frames:v" in cmd and "1" in cmd
     assert "-q:v" in cmd and "2" in cmd
+    # Frames must be capped under Anthropic's 2000px many-image limit.
+    assert "-vf" in cmd
+    vf_value = cmd[cmd.index("-vf") + 1]
+    assert "1600" in vf_value
+    assert "force_original_aspect_ratio=decrease" in vf_value
     assert str(out / "00-00-30.jpg") in cmd
 
     assert written == [out / "00-00-30.jpg", out / "00-02-15.jpg"]
