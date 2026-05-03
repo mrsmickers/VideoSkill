@@ -86,82 +86,92 @@ about LinkedIn posts?"* Claude reads the index in `CLAUDE.md`, greps
 `summary.md` / `extracted.md` for matches, opens the relevant files, and
 answers with citations like `(daniel-priestley/<slug>, 14:32)`.
 
-## Optional — host frames publicly + publish to Notion
+## Optional — publish a slug folder as a Notion SOP
 
-For sharing SOPs with embedded frames (e.g. as Notion pages), the frames
-need to live somewhere with public URLs. The provided
-`scripts/upload-frames-to-r2.py` ships with Cloudflare R2 wired up because
-its free tier covers this comfortably, but the upload step is just "put
-JPGs somewhere they can be fetched by URL" — any public-bucket service
-works.
+Once a library entry exists, you can ask Claude Code in this folder to
+compose a Notion SOP from it: `extracted.md` becomes the spine, frames
+slot in next to the relevant step. Two upload paths ship with the project,
+chosen by privacy:
 
-### Recipe (using R2's free tier)
+|                          | `upload-frames-to-notion.py` (recommended) | `upload-frames-to-r2.py` |
+|--------------------------|--------------------------------------------|--------------------------|
+| Storage                  | Notion's private workspace storage         | Cloudflare R2 public domain |
+| Who can fetch the frame  | Authenticated members of your Notion workspace | Anyone with the URL |
+| Suitable for             | **Public *and* private** source videos     | Public source videos only |
+| Reusable URL outside Notion | No (URLs are workspace-bound) | Yes — embed in blog posts, Slack, GitHub |
+| Setup                    | One Notion integration token (1 min) | A Cloudflare R2 bucket + API token (5 min) |
+
+If you're unsure, start with the Notion path — it's faster to set up,
+covers private content, and the Markdown SOP draft Claude composes can
+embed images either way.
+
+### Recipe A — Notion file uploads (default)
+
+1. Create an internal Notion integration at
+   [notion.so/profile/integrations](https://www.notion.so/profile/integrations).
+   Copy the secret token (starts with `ntn_` or `secret_`).
+2. Open the parent Notion page where the SOP will live, click *Connections*
+   in the top-right, and add your new integration so it has access.
+3. Put the token in `.env` as `VIDEOSKILL_NOTION_API_KEY=…`, then re-source.
+4. In Claude Code, ask: *"create a Notion SOP under <parent-page> from
+   library/<creator>/<slug>"*. Claude writes the page (using its
+   Notion MCP if present, or by direct API call), then runs:
+   ```bash
+   .venv/bin/python scripts/upload-frames-to-notion.py \
+       library/<creator>/<slug> --page-id <new-page-id>
+   ```
+   …which uploads each frame and appends it as an image block on the page.
+
+Frames end up on `prod-files-secure.s3.us-west-2.amazonaws.com` — Notion's
+private CDN. Only authenticated members of your workspace can fetch them.
+
+### Recipe B — Cloudflare R2 (for public-URL hosting)
+
+Use this if you specifically want the frames at *public* URLs (e.g. for
+embedding in a blog post or external doc, not just Notion). Only suitable
+for ingesting public videos.
 
 1. Create an R2 bucket in your Cloudflare account, enable the managed
    `r2.dev` public domain (or attach a custom one), and create an R2 API
    token with read+write on the bucket.
-2. Fill the `VIDEOSKILL_R2_*` vars in `.env`.
+2. Fill the `VIDEOSKILL_R2_*` vars in `.env` (see `.env.example` for the list).
 3. Upload:
    ```bash
    .venv/bin/python scripts/upload-frames-to-r2.py library/<creator>/<slug>
    ```
-4. The script prints a JSON map of `filename → public URL`. Pipe it into
-   Claude Code and ask it to compose a Notion page with the frames embedded
-   at the right SOP steps. The `extracted.md` file in the slug folder is the
-   spine of the SOP; frames slot in next to the relevant whiteboard / step.
+   The script prints a JSON map of `filename → public URL` you can paste
+   into Notion's Markdown image syntax (`![alt](url)`) anywhere.
 
-A worked example: the *Daniel Priestley — Why You Must Build a YouTube
-Channel* SOP page in the maintainer's Notion workspace was authored end-to-end
-this way — 12 frames embedded at their correct SOP steps, all citations linked
-back to the library entry. Took roughly 5 minutes from URL to published page
-once the library entry was ingested.
-
-### Drop-in storage alternatives
-
-The provided script targets R2 because the free tier is generous and the
-managed `r2.dev` domain handles serving with no extra setup. Swap in any of
-these by changing the endpoint URL (and the env var values):
+The provided script targets R2 because its free tier is generous, but the
+upload step is just "put JPGs at a public URL". Drop-in alternatives:
 
 - **AWS S3** with a public bucket policy — battle-tested, costs pennies.
 - **Backblaze B2** with a public bucket — free 10GB, S3-compatible.
 - **DigitalOcean Spaces** — S3-compatible, paid.
+- **GitHub raw URLs** — commit frames to a public repo and reference
+  `raw.githubusercontent.com/...`. No service to manage, slow-ish at scale.
 
-If you don't want to set up *any* bucket service, you can also commit
-frames to a public GitHub repo and use the `raw.githubusercontent.com`
-URLs — no service to manage, no API token to issue, slow-ish at scale but
-fine for occasional SOPs. Google Drive is *technically* possible via
-public-share links, but Google has been progressively restricting direct
-image hotlinking from Drive — not recommended.
+Google Drive is *technically* possible via public-share links, but Google
+has been progressively restricting direct image hotlinking from Drive —
+not recommended.
 
-The only requirements: the URL must be (a) fetchable without auth and (b)
-stable. Anything that satisfies those works.
+The only requirements for any swap-in: URL must be (a) fetchable without
+auth and (b) stable.
 
-### ⚠️ Privacy caveat — public videos only
+### A worked example
 
-**Frames uploaded to public storage are accessible to anyone with the URL.**
-That's fine for ingesting public videos (you're republishing material that
-was already public). It is *not* fine for private or proprietary content —
-internal Loom recordings, paid courses you've licensed, client SOPs,
-NDA-bound conference talks.
-
-If you want VideoSkill on private content, two workarounds:
-
-1. **Skip the public-URL flow entirely.** The library entry stays on your
-   filesystem; future Claude Code sessions in this folder can still read
-   `library/<slug>/frames/*.jpg` locally and answer questions about the
-   content. You just don't get embedded images in published Notion pages.
-2. **Upload frames directly into Notion via its API.** Notion's
-   `/v1/file_uploads` endpoint accepts JPGs into your workspace's private
-   file storage, where they're only accessible to authenticated workspace
-   members. There isn't a built-in script for this in VideoSkill yet — PRs
-   welcome, or ask Claude Code to write one for you in the moment using
-   `scripts/upload-frames-to-r2.py` as the structural template.
+The *Daniel Priestley — Why You Must Build a YouTube Channel* SOP page in
+the maintainer's Notion workspace was authored end-to-end this way: 12
+frames embedded at their correct SOP steps, all citations linked back to
+the library entry. Roughly 5 minutes from URL to published page once the
+library entry was ingested.
 
 ## Layout
 
 - `ingest.py` — two-phase CLI (`prepare`, `finalize`)
 - `lib/` — Python helpers (download, transcribe, frames, meta, index)
-- `scripts/upload-frames-to-r2.py` — optional frame-hosting helper
+- `scripts/upload-frames-to-notion.py` — frames → Notion private storage (default)
+- `scripts/upload-frames-to-r2.py` — frames → public URLs (alternative)
 - `library/<creator-or-topic>/<slug>/` — ingested content (gitignored)
 - `CLAUDE.md` — auto-generated library index, loaded by Claude Code on chat open
 - `docs/superpowers/specs/` — original design doc

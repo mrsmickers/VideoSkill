@@ -42,9 +42,25 @@ if [ -n "${_r2_blob:-}" ]; then
 fi
 unset _r2_blob _r2_ak _r2_sk
 
-if [ "${_r2_loaded:-0}" = "1" ]; then
-  unset _r2_loaded
-  echo "Loaded from bws: GROQ_API_KEY, VIDEOSKILL_R2_ACCESS_KEY_ID, VIDEOSKILL_R2_SECRET_ACCESS_KEY."
-else
-  echo "Loaded from bws: GROQ_API_KEY.  (R2 secrets not found — scripts/upload-frames-to-r2.py won't work until 'VIDEOSKILL R2 secrets' is added.)"
+# --- Notion internal-integration token (entry name 'Notion') ---
+_notion_value=$(bws secret list --output json | jq -r '.[] | select(.key=="Notion") | .value' | head -n 1)
+if [ -n "${_notion_value:-}" ]; then
+  export VIDEOSKILL_NOTION_API_KEY="$_notion_value"
+  _notion_loaded=1
 fi
+unset _notion_value
+
+# --- summary ---
+_loaded="GROQ_API_KEY"
+[ "${_r2_loaded:-0}" = "1" ] && _loaded="$_loaded, VIDEOSKILL_R2_ACCESS_KEY_ID, VIDEOSKILL_R2_SECRET_ACCESS_KEY"
+[ "${_notion_loaded:-0}" = "1" ] && _loaded="$_loaded, VIDEOSKILL_NOTION_API_KEY"
+echo "Loaded from bws: $_loaded."
+
+# Hint on what's missing (only if it actually is):
+if [ "${_r2_loaded:-0}" != "1" ]; then
+  echo "  (R2 secrets not found — scripts/upload-frames-to-r2.py won't work until 'VIDEOSKILL R2 secrets' is added.)"
+fi
+if [ "${_notion_loaded:-0}" != "1" ]; then
+  echo "  (Notion token not found — scripts/upload-frames-to-notion.py won't work until 'Notion' entry is added.)"
+fi
+unset _loaded _r2_loaded _notion_loaded

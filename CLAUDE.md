@@ -50,16 +50,26 @@ set -a; source .env; set +a
 
 Confirm with `echo $GROQ_API_KEY` — should print the key (not empty).
 
-### 5. (Optional) Cloudflare R2 setup
+### 5. (Optional) Pick a frame-hosting path if they want to publish SOPs
 
-Only needed if the user wants `scripts/upload-frames-to-r2.py` to host frame
-JPGs publicly (e.g. for embedding in Notion). If they don't ask for this,
-skip — ingestion works fine without it.
+Skip this entirely if the user just wants the local library and isn't yet
+publishing anywhere — ingestion works without it.
 
-If they want it: they need a Cloudflare account, an R2 bucket with the managed
-`r2.dev` public domain enabled (or a custom domain), and an R2 API token with
-read+write on that bucket. Fill the `VIDEOSKILL_R2_*` vars in `.env` (see
-`.env.example` for the list) and re-source.
+If they do want to publish to Notion, ask which path fits:
+
+- **Notion file uploads (default, supports private content).** Frames go
+  into the user's Notion workspace's private storage. Setup: create an
+  internal integration at notion.so/profile/integrations, give it access
+  to the target page via *Connections*, paste the token into `.env` as
+  `VIDEOSKILL_NOTION_API_KEY=…`. Script: `scripts/upload-frames-to-notion.py`.
+- **Cloudflare R2 (public URLs).** Use this only if the source videos are
+  public *and* the user wants frames embeddable outside Notion (blog posts,
+  Slack, GitHub READMEs). Setup: create an R2 bucket, enable the managed
+  `r2.dev` public domain, create an R2 API token, fill the `VIDEOSKILL_R2_*`
+  vars in `.env`. Script: `scripts/upload-frames-to-r2.py`.
+
+If unsure, recommend the Notion path — quicker to set up, covers private
+content, and the resulting page looks the same either way.
 
 ### 6. Smoke-test on a short video
 
