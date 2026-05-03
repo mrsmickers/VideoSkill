@@ -228,11 +228,13 @@ auth and (b) stable.
 
 ### A worked example
 
-The *Daniel Priestley — Why You Must Build a YouTube Channel* SOP page in
-the maintainer's Notion workspace was authored end-to-end this way: 12
-frames embedded at their correct SOP steps, all citations linked back to
-the library entry. Roughly 5 minutes from URL to published page once the
-library entry was ingested.
+[**Daniel Priestley — Why You Must Build a YouTube Channel (SOP)**](https://www.notion.so/Daniel-Priestley-Why-You-Must-Build-a-YouTube-Channel-SOP-3557f1850b1181a9ae87c200b3351b76)
+was authored end-to-end with this flow: 12 frames embedded at their correct
+SOP steps via Notion file_uploads, all citations linked back to the library
+entry. Roughly 5 minutes from URL to published page once the library entry
+was ingested. Source video: Daniel Priestley's
+[*Why You Must Build a YouTube Channel*](https://www.youtube.com/watch?v=RoXlS4S0WeA)
+(21 min).
 
 ## Layout
 
