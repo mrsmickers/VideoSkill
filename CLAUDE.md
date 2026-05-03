@@ -31,6 +31,9 @@ and `docs/superpowers/plans/2026-04-29-videoskill-implementation.md` for the bui
 <!-- BEGIN AUTO-INDEX -->
 ## Library
 
-*Empty. Run an ingest to populate.*
+### daniel-priestley
+
+- `daniel-priestley/the-new-rules-of-business-ai-changes-everything/` — The New Rules of Business (AI Changes Everything)
+- `daniel-priestley/why-you-must-build-a-youtube-channel/` — Why You Must Build a YouTube Channel
 
 <!-- END AUTO-INDEX -->
