@@ -3,33 +3,53 @@
 [![Tests](https://github.com/mrsmickers/VideoSkill/actions/workflows/test.yml/badge.svg)](https://github.com/mrsmickers/VideoSkill/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Turn almost any public video into a fully-cited knowledge artifact:
-timestamped transcript, structured summary, extracted methodology with
-verbatim quotes, and key frames at the moments that mattered.
+Build a personal library from anyone's public video corpus, then talk to
+them through Claude Code — or generate fully-cited SOPs from any single
+video. Plain markdown + JPGs you own outright.
 
-Think of it as Loom's AI SOP feature with two big differences:
+## Two main uses
 
-1. **You don't record the video — you give it a URL.** Works on most public
-   video sources, not just YouTube: Vimeo, Twitter/X, TikTok, LinkedIn,
-   Twitch, conference recordings. Anything `yt-dlp` can fetch.
-2. **The output is plain markdown + JPGs you own.** No SaaS lock-in. Future
-   Claude Code sessions in this folder can grep across the library to answer
-   questions, write SOPs, build new skills, or publish straight to Notion
-   (with frames hosted on your own Cloudflare R2 bucket — one shell command).
+### 1. Chat with a virtual creator
 
-Each ingested video lives at `library/<creator-or-topic>/<slug>/` with:
+Ingest two years of someone's YouTube/Vimeo/podcast output. Open Claude
+Code in this folder and say *"act as Daniel Priestley"*. Claude reads the
+library — every framework, recurring story, verbatim quote, do/don't —
+and stays in character. When you ask about something they actually
+covered on camera, the persona quotes them with a citation. When you ask
+something they haven't covered, the persona flags that explicitly and
+falls back to general public knowledge. **Never invents quotes** — those
+only ever come from the library.
+
+This is closer to having a coffee with someone than to reading their
+books.
+
+### 2. Generate a Notion SOP from a single video
+
+Like Loom's AI SOP feature, with two differences:
+
+- **You don't record the video — you give it a URL.** Works on most
+  public video sources, not just YouTube: Vimeo, Twitter/X, TikTok,
+  LinkedIn, Twitch, conference recordings. Anything `yt-dlp` can fetch.
+- **Output is plain markdown + JPGs you own.** No SaaS lock-in. Pages
+  can publish to Notion (frames hosted privately in your workspace, by
+  default) or render anywhere else.
+
+## What an ingested video looks like
+
+Each video lives at `library/<creator-or-topic>/<slug>/`:
 
 - `transcript.md` — full timestamped transcript (Whisper-large-v3)
-- `summary.md` — short overview + key points
-- `extracted.md` — frameworks, templates, verbatim quotes, do's/don'ts
+- `summary.md` — short overview + 5–10 timestamped key points
+- `extracted.md` — frameworks, templates, verbatim quotes with timestamps,
+  explicit do's/don'ts. *This is the file the persona reads most.*
 - `frames/` — JPG frames at the timestamps that mattered (auto-capped at
   1600px so Claude can review many in one go)
 - `meta.json` — url, title, channel, duration, ingest date
 
 The mechanical work (download, transcribe, extract frames) is Python. The
-cognitive work (write the summary, pick frame timestamps, compose SOPs)
-runs inside your Claude Code session — covered by your subscription, not
-metered API calls.
+cognitive work (write the summary + extraction, pick frame timestamps,
+hold the persona, compose SOPs) runs inside your Claude Code session —
+covered by your subscription, not metered API calls.
 
 ## What it costs
 
@@ -82,12 +102,47 @@ finalize`.
 After ingesting, the top-level `CLAUDE.md` is regenerated as an index of the
 library so a future Claude Code session sees the whole library on chat open.
 
-## Asking the library questions
+## Using the library
 
-Open Claude Code in this folder and ask, e.g. *"what would Daniel Priestley say
-about LinkedIn posts?"* Claude reads the index in `CLAUDE.md`, greps
-`summary.md` / `extracted.md` for matches, opens the relevant files, and
-answers with citations like `(daniel-priestley/<slug>, 14:32)`.
+### Question-answering mode
+
+Open Claude Code in this folder and ask, e.g.
+*"what would Daniel Priestley say about LinkedIn posts?"* Claude reads
+the index in `CLAUDE.md`, greps `summary.md` / `extracted.md` for matches,
+opens the relevant files, and answers with citations like
+`(daniel-priestley/<slug>, 14:32)`. The questions stay yours, the answers
+stay attributed.
+
+### Persona / "act as" mode
+
+Tell Claude *"act as Daniel Priestley"*, *"role-play as <creator>"*, or
+similar. Claude reads every `extracted.md` and `summary.md` under that
+creator's subfolder — frameworks, vocabulary, recurring stories — and
+stays in character.
+
+Behaviour rules baked into `CLAUDE.md`:
+
+- **The library is the primary source of truth.** Specific claims —
+  frameworks, statistics, anecdotes, quotes — must come from a video and
+  be cited as `(creator/slug, mm:ss)`.
+- **Never invent quotes.** If the library doesn't contain it, the persona
+  doesn't say it. Fabricated quotes attributed to a real person are the
+  one thing that ruins the mode.
+- **Flag fallbacks explicitly.** When the user asks something the library
+  doesn't cover, the persona says so in character — *"I haven't covered
+  this on camera, but…"* — then answers from general public knowledge of
+  the person.
+
+This is closer to having a coffee with the person than to reading their
+books.
+
+### Skill / SOP / asset creation
+
+When a creator has 30+ videos in the library, ask Claude to package
+their methodology as a Claude Code skill (using the
+`anthropic-skills:skill-creator` skill, if installed) or as a Notion SOP
+(see the next section). Both work off the same `extracted.md` files the
+persona mode uses.
 
 ## Optional — publish a slug folder as a Notion SOP
 

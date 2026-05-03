@@ -82,8 +82,12 @@ then follow **How to ingest new content** below.
 
 ## How to use this library
 
-When the user asks about a creator's content (e.g. *"what would Daniel
-Priestley say about LinkedIn posts"*):
+This library supports three distinct usage modes. Detect which the user is
+asking for from their phrasing, and follow the rules for that mode.
+
+### Mode 1 — Question answering ("what would <creator> say about X?")
+
+When the user asks a focused question about a creator's content:
 
 1. Skim the auto-index at the bottom of this file to spot the relevant
    subfolder.
@@ -94,8 +98,54 @@ Priestley say about LinkedIn posts"*):
 4. Open `transcript.md` only if you need exact wording — quote with the
    `[mm:ss]` timestamp.
 5. If the question is visual, look at `frames/` for the relevant timestamp.
-6. Cite as `(daniel-priestley/<slug>, 14:32)` so the user can jump back to
-   source.
+6. Cite as `(daniel-priestley/<slug>, 14:32)` so the user can jump back
+   to source.
+
+### Mode 2 — Persona / "act as" ("act as Daniel Priestley")
+
+When the user asks you to role-play, embody, or speak as a creator:
+
+1. Read **every** `summary.md` and `extracted.md` under that creator's
+   subfolder. These give you the frameworks, recurring vocabulary, do's
+   and don'ts, and the verbatim quote bank. Open `transcript.md` files
+   selectively if you need tone or speech patterns.
+2. Adopt the creator's voice: their framings, preferred vocabulary,
+   typical examples and turn of phrase. Stay in character for the rest
+   of the conversation unless the user breaks character.
+3. **The library is the primary source of truth.** When making any
+   specific claim — a framework, a number, an anecdote, a quote — cite
+   the source video as `(creator/slug, mm:ss)`. Quotes especially must
+   come from `extracted.md` or `transcript.md`.
+4. **Never invent quotes, statistics, or specific stories** and put them
+   in the creator's mouth. If the library doesn't contain it, the persona
+   doesn't say it. Fabricated quotes attributed to a real person are the
+   one failure mode that ruins this mode.
+5. When the user asks something the library doesn't cover:
+   - Flag it explicitly first, in character: *"I haven't covered this on
+     camera, but…"* or *"that's not something I've gone deep on in
+     videos, but my general view…"*
+   - Then answer from general public knowledge of the person, not from
+     specifics that would imply a video source you can't cite.
+6. If the user pushes for a citation you genuinely can't make from the
+   library, say so honestly rather than fabricating one.
+
+### Mode 3 — Build a skill or SOP from a creator's body of work
+
+When the user asks you to *"create a skill from <creator>'s content"*,
+*"build an SOP from <slug>"*, or similar:
+
+1. Read every `extracted.md` under the relevant scope (whole creator
+   folder for skills, single slug folder for SOPs). `extracted.md` is
+   the spine of any output here — frameworks, templates, do's/don'ts,
+   verbatim quotes are already structured.
+2. For a Claude Code skill: invoke `anthropic-skills:skill-creator` if
+   it's installed, otherwise write `SKILL.md` directly into
+   `.claude/skills/<creator>-<topic>/`. Cite source videos in the skill
+   prose so it stays traceable.
+3. For a Notion SOP: see "How to publish a slug folder as a Notion SOP"
+   in the README — the gist is *write the markdown body using
+   `extracted.md` as the spine*, then run `scripts/upload-frames-to-notion.py`
+   with `--page-id` to embed frames at the right SOP steps.
 
 ## How to ingest new content
 
