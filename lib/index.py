@@ -76,3 +76,11 @@ def _default_template(section: str) -> str:
         "\n"
         f"{BEGIN_MARKER}\n{section}\n{END_MARKER}\n"
     )
+
+
+if __name__ == "__main__":
+    project_root = Path(__file__).resolve().parent.parent
+    regenerate(
+        claude_md_path=project_root / "CLAUDE.md",
+        library_root=project_root / "library",
+    )
