@@ -176,5 +176,44 @@ Build plan: `docs/superpowers/plans/2026-04-29-videoskill-implementation.md`.
 <!-- BEGIN AUTO-INDEX -->
 ## Library
 
-*Empty. Run an ingest to populate.*
+### daniel-priestley
+
+- `daniel-priestley/the-new-rules-of-business-ai-changes-everything/` — The New Rules of Business (AI Changes Everything)
+- `daniel-priestley/why-you-must-build-a-youtube-channel/` — Why You Must Build a YouTube Channel
+
+### they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing
+
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l01-course-overview/` — Course Overview
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l02-1-a-very-different-way-of-looking-at-business-marketing-and-trust/` — 1. A Very Different Way of Looking at Business, Marketing, and Trust
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l03-the-origin-of-they-ask-you-answer/` — The Origin of 'They Ask, You Answer'
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l04-the-buyers-zero-moment-of-truth/` — The Buyers Zero Moment of Truth
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l05-were-different/` — We're Different
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l06-a-revolutionary-marketing-strategy-answer-customers-questions/` — A Revolutionary Marketing Strategy: Answer Customers' Questions
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l07-developing-your-first-100-blog-article-topics/` — Developing Your First 100+ Blog Article Topics
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l08-the-carmax-effect-and-how-to-have-a-healthy-relationship-with-fear/` — The 'CarMax Effect' and How to Have a Healthy Relationship with Fear
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l09-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l02-the-5-questions-that-buyers-obsess-over/` — The 5 Questions That Buyers Obsess Over
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l03-the-big-5-cost-and-price/` — The Big 5: Cost and Price
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l04-the-big-5-problems/` — The Big 5: Problems
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l05-the-big-5-versus-and-comparison/` — The Big 5:Versus and Comparison
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l06-the-big-5-reviews-and-best-in-class/` — The Big 5: Reviews and Best in Class
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l07-who-should-influence-what-we-say-online/` — Who Should Influence What We Say Online?
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l08-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l02-7-benefits-of-sales-teams-embracing-they-ask-you-answer/` — 7 Benefits of Sales Teams Embracing They Ask, You Answer
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l03-the-magic-number-30/` — The Magic Number 30
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l04-content-never-sleeps/` — Content Never Sleeps
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l05-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l02-insourcing/` — Insourcing
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l03-buy-in-from-top-to-bottom/` — Buy-in from Top to Bottom
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l04-the-content-manager/` — The Content Manager
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l05-using-the-right-tools/` — Using the Right Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l06-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l02-real-time-conversations/` — Real-Time Conversations
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l03-self-selection-tools/` — Self-Selection Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s06-l01-bonus-lecture/` — Bonus Lecture
+
 <!-- END AUTO-INDEX -->
