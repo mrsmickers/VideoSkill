@@ -107,6 +107,28 @@ def test_cmd_image_runs_three_step_upload(tmp_path, mocker, capsys):
     assert image["caption"][0]["text"]["content"] == "a caption"
 
 
+def test_cmd_html_uploads_and_attaches_embed(tmp_path, mocker, capsys):
+    html = tmp_path / "calc.html"
+    html.write_text("<!doctype html><body><b>hi</b></body>")
+    request_mock = mocker.patch.object(
+        notion_sop, "_request", return_value={"id": "up-9"}
+    )
+    notion_sop.cmd_html("page-1", str(html), "ROI calculator")
+
+    calls = request_mock.call_args_list
+    method, path, payload = calls[0].args
+    assert (method, path) == ("POST", "/file_uploads")
+    assert payload["content_type"] == "text/html"
+    assert calls[0].kwargs["version"] == notion_sop.UPLOAD_VERSION
+    assert calls[1].args[:2] == ("POST", "/file_uploads/up-9/send")
+    method, path, payload = calls[2].args
+    assert (method, path) == ("PATCH", "/blocks/page-1/children")
+    embed = payload["children"][0]["embed"]
+    assert embed["type"] == "file_upload"
+    assert embed["file_upload"] == {"id": "up-9"}
+    assert embed["caption"][0]["text"]["content"] == "ROI calculator"
+
+
 def test_load_api_key_prefers_env(monkeypatch):
     monkeypatch.setenv("VIDEOSKILL_NOTION_API_KEY", "ntn_test")
     assert notion_sop.load_api_key() == "ntn_test"

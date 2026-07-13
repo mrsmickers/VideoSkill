@@ -216,6 +216,33 @@ def cmd_image(page_id: str, file: str, caption: str | None) -> None:
     print(f"attached {path.name} (file_upload {upload['id']})")
 
 
+def cmd_html(page_id: str, file: str, caption: str | None) -> None:
+    """Upload a self-contained .html file and attach it as an interactive
+    HTML block (Notion 3.6+). Renders in a sandboxed iframe: inline CSS/JS
+    only — no external network calls, no access to Notion page data.
+    """
+    path = Path(file)
+    if not path.exists():
+        raise SystemExit(f"No such file: {path}")
+    upload = _request("POST", "/file_uploads",
+                      {"filename": path.name, "content_type": "text/html"},
+                      version=UPLOAD_VERSION)
+    body, boundary = _multipart(path)
+    _request("POST", f"/file_uploads/{upload['id']}/send", body=body,
+             content_type=f"multipart/form-data; boundary={boundary}",
+             version=UPLOAD_VERSION)
+    embed_block: dict = {
+        "object": "block",
+        "type": "embed",
+        "embed": {"type": "file_upload", "file_upload": {"id": upload["id"]}},
+    }
+    if caption:
+        embed_block["embed"]["caption"] = _rich_text(caption)
+    _request("PATCH", f"/blocks/{page_id}/children", {"children": [embed_block]},
+             version=UPLOAD_VERSION)
+    print(f"attached {path.name} as HTML block (file_upload {upload['id']})")
+
+
 def cmd_read(page_id: str) -> None:
     cursor = None
     while True:
@@ -254,6 +281,11 @@ def main(argv: list[str] | None = None) -> int:
     i.add_argument("file")
     i.add_argument("--caption", default=None)
 
+    h = sub.add_parser("html")
+    h.add_argument("page_id")
+    h.add_argument("file")
+    h.add_argument("--caption", default=None)
+
     r = sub.add_parser("read")
     r.add_argument("page_id")
 
@@ -264,6 +296,8 @@ def main(argv: list[str] | None = None) -> int:
         cmd_append(args.page_id, args.md_file)
     elif args.cmd == "image":
         cmd_image(args.page_id, args.file, args.caption)
+    elif args.cmd == "html":
+        cmd_html(args.page_id, args.file, args.caption)
     elif args.cmd == "read":
         cmd_read(args.page_id)
     return 0

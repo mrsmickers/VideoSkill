@@ -92,6 +92,22 @@ Title suffix: **(SOP)** for procedural content (setup guides, how-tos),
 `scripts/upload-frames-to-r2.py` only if the user wants frames embeddable
 outside Notion.
 
+## Optional — interactive HTML blocks (Notion 3.6+)
+
+When the video's content *is* a tool — a calculator, a scoring rubric, an
+interactive framework — don't screenshot it, rebuild it:
+
+```bash
+python3 "$SKILL_DIR/scripts/notion_sop.py" html <page_id> <tool.html> --caption "<what it does>"
+```
+
+Write the `.html` fully self-contained (inline CSS/JS): it renders in a
+sandboxed iframe with **no external network access and no access to Notion
+data**, so CDN scripts, fonts, and fetch calls will silently fail. Good
+candidates: formula calculators (e.g. the AdWords-course calculator lessons),
+ROI/pricing tools, interactive diagrams. Don't use it for static content —
+markdown blocks search and export better.
+
 ## Step 5 — verify and hand over
 
 ```bash
