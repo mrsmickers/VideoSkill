@@ -1,3 +1,4 @@
+import re
 import subprocess
 from pathlib import Path
 from typing import Sequence
@@ -5,6 +6,12 @@ from typing import Sequence
 
 class FrameExtractError(RuntimeError):
     pass
+
+
+SCENE_THRESHOLD = 0.20
+DEDUP_THUMB = 16
+DEDUP_THRESHOLD = 2.0
+_SHOWINFO_TS_RE = re.compile(r"pts_time:([0-9.]+)")
 
 
 def parse_timestamp(value: str) -> int:
@@ -56,3 +63,53 @@ def extract_frames(
             ) from e
         written.append(out_path)
     return written
+
+
+def detect_scene_timestamps(*, video_path: Path, threshold: float = SCENE_THRESHOLD) -> list[float]:
+    """Advisory scene-change timestamps (seconds), via ffmpeg select+showinfo.
+
+    Writes no files — used by `ingest.py propose-frames` to suggest candidates.
+    Technique raided from bradautomates/claude-video (MIT).
+    """
+    cmd = [
+        "ffmpeg", "-hide_banner", "-loglevel", "info",
+        "-i", str(Path(video_path).resolve()),
+        "-vf", f"select='gt(scene\\,{threshold})',showinfo",
+        "-f", "null", "-",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise FrameExtractError(f"ffmpeg scene detection failed: {result.stderr.strip()}")
+    return [round(float(m.group(1)), 2) for m in _SHOWINFO_TS_RE.finditer(result.stderr)]
+
+
+def _gray_thumb(path: Path) -> bytes:
+    """16x16 grayscale raw bytes for a JPEG, via ffmpeg (no image libraries)."""
+    cmd = [
+        "ffmpeg", "-hide_banner", "-loglevel", "error",
+        "-i", str(path),
+        "-vf", f"scale={DEDUP_THUMB}:{DEDUP_THUMB},format=gray",
+        "-f", "rawvideo", "-",
+    ]
+    result = subprocess.run(cmd, capture_output=True)
+    if result.returncode != 0 or len(result.stdout) != DEDUP_THUMB * DEDUP_THUMB:
+        return b""  # fail-open: caller treats as not-a-duplicate
+    return result.stdout
+
+
+def near_duplicate_pairs(paths: Sequence[Path], threshold: float = DEDUP_THRESHOLD) -> list[tuple[Path, Path]]:
+    """Consecutive pairs of frames that are visually near-identical.
+
+    Mean absolute per-pixel difference of 16x16 grayscale thumbnails, compared
+    pairwise in the given order. Advisory only — nothing is deleted.
+    """
+    thumbs = [_gray_thumb(Path(p)) for p in paths]
+    pairs: list[tuple[Path, Path]] = []
+    for i in range(1, len(paths)):
+        ta, tb = thumbs[i - 1], thumbs[i]
+        if not ta or not tb or len(ta) != len(tb):
+            continue
+        delta = sum(abs(x - y) for x, y in zip(ta, tb)) / len(ta)
+        if delta <= threshold:
+            pairs.append((Path(paths[i - 1]), Path(paths[i])))
+    return pairs

@@ -55,3 +55,23 @@ def test_extract_frames_invokes_ffmpeg_per_timestamp(tmp_path, mocker):
 
     assert written == [out / "00-00-30.jpg", out / "00-02-15.jpg"]
     assert out.exists()
+
+
+def test_detect_scene_timestamps_finds_cuts(cut_clip):
+    ts = frames.detect_scene_timestamps(video_path=cut_clip)
+    assert len(ts) >= 5          # 8 segments → 7 cuts; allow encoder slack
+    assert ts == sorted(ts)
+    assert all(0.0 < t < 4.0 for t in ts)
+
+
+def test_detect_scene_timestamps_static_clip_finds_none(static_clip):
+    assert frames.detect_scene_timestamps(video_path=static_clip) == []
+
+
+def test_near_duplicate_pairs_flags_identical_frames(tmp_path, static_clip, cut_clip):
+    a = frames.extract_frames(video_path=static_clip, timestamps=["00:00"], out_dir=tmp_path / "x")[0]
+    b = frames.extract_frames(video_path=static_clip, timestamps=["00:02"], out_dir=tmp_path / "y")[0]
+    # t=0 of cut_clip is a red segment — a genuinely different frame from the blue static clip
+    c = frames.extract_frames(video_path=cut_clip, timestamps=["00:00"], out_dir=tmp_path / "z")[0]
+    assert frames.near_duplicate_pairs([a, b]) == [(a, b)]
+    assert frames.near_duplicate_pairs([a, c]) == []
