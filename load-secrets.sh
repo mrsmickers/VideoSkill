@@ -12,15 +12,8 @@ if ! command -v jq >/dev/null 2>&1; then
   return 1 2>/dev/null || exit 1
 fi
 
-# --- Groq whisper key (entry name 'Groq API Key', with spaces) ---
-_groq_value=$(bws secret list --output json | jq -r '.[] | select(.key=="Groq API Key") | .value' | head -n 1)
-if [ -z "${_groq_value:-}" ]; then
-  echo "ERROR: secret 'Groq API Key' not found in bws" >&2
-  unset _groq_value
-  return 1 2>/dev/null || exit 1
-fi
-export GROQ_API_KEY="$_groq_value"
-unset _groq_value
+# Transcription is fully local (parakeet-mlx) — no API key needed to ingest.
+# This script only loads publishing secrets (R2, Notion).
 
 # --- R2 access keys (single bws entry 'VIDEOSKILL R2 secrets' with two lines:
 #       R2_ACCESS_KEY_ID: <hex>
@@ -51,10 +44,17 @@ fi
 unset _notion_value
 
 # --- summary ---
-_loaded="GROQ_API_KEY"
-[ "${_r2_loaded:-0}" = "1" ] && _loaded="$_loaded, VIDEOSKILL_R2_ACCESS_KEY_ID, VIDEOSKILL_R2_SECRET_ACCESS_KEY"
-[ "${_notion_loaded:-0}" = "1" ] && _loaded="$_loaded, VIDEOSKILL_NOTION_API_KEY"
-echo "Loaded from bws: $_loaded."
+_loaded=""
+[ "${_r2_loaded:-0}" = "1" ] && _loaded="VIDEOSKILL_R2_ACCESS_KEY_ID, VIDEOSKILL_R2_SECRET_ACCESS_KEY"
+if [ "${_notion_loaded:-0}" = "1" ]; then
+  [ -n "$_loaded" ] && _loaded="$_loaded, "
+  _loaded="${_loaded}VIDEOSKILL_NOTION_API_KEY"
+fi
+if [ -n "$_loaded" ]; then
+  echo "Loaded from bws: $_loaded."
+else
+  echo "Nothing loaded from bws — R2/Notion entries not found."
+fi
 
 # Hint on what's missing (only if it actually is):
 if [ "${_r2_loaded:-0}" != "1" ]; then

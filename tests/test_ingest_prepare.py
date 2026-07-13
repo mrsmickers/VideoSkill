@@ -124,7 +124,7 @@ def test_prepare_returns_4_on_transcribe_failure(tmp_path, mocker):
     from lib import transcribe
     mocker.patch(
         "ingest.transcribe.transcribe_audio",
-        side_effect=transcribe.TranscribeError("groq exploded"),
+        side_effect=transcribe.TranscribeError("parakeet exploded"),
     )
 
     rc = ingest_cli.run(["prepare", "https://youtu.be/abc", "--to", "dp", "--library", str(library)])

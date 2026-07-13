@@ -53,8 +53,9 @@ covered by your subscription, not metered API calls.
 
 ## What it costs
 
-- **Groq Whisper-large-v3** for transcription: ~$0.04 per audio-hour. A
-  30-video batch averaging an hour each is roughly £1.
+- **Transcription is free and local** — NVIDIA `parakeet-tdt-0.6b-v2`
+  running on Apple Silicon via parakeet-mlx (~1 minute per audio-hour,
+  one-time ~1.2 GB model download, English-only).
 - **Your existing Claude Code subscription** covers the cognitive work —
   summary, methodology extraction, frame selection, SOP authoring. No
   metered API calls.
@@ -71,8 +72,9 @@ embed them in any tool.
 
 - Python 3.12+
 - `ffmpeg` and `yt-dlp` on your PATH (e.g. `brew install ffmpeg yt-dlp` on macOS)
-- A Groq API key for `whisper-large-v3` transcription (sign up at
-  [console.groq.com](https://console.groq.com))
+- An Apple Silicon Mac — transcription runs locally via
+  [parakeet-mlx](https://github.com/senstella/parakeet-mlx) (no API key;
+  the ~1.2 GB model downloads on first use)
 - Claude Code installed (the cognitive work runs inside a Claude Code session)
 
 ## Setup
@@ -83,14 +85,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Configure secrets — copy the template and fill in GROQ_API_KEY
+# 2. (Optional) Configure publishing secrets (Notion/R2) — not needed to ingest
 cp .env.example .env
 $EDITOR .env
-
-# 3. Load env vars into your current shell
 set -a; source .env; set +a
 
-# 4. Open Claude Code in this folder
+# 3. Open Claude Code in this folder
 claude
 ```
 

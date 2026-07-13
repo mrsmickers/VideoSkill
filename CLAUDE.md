@@ -32,23 +32,22 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Get a Groq API key from the user
+### 3. First transcription downloads the model
 
-Required for transcription. Free account at
-[console.groq.com](https://console.groq.com); ~$0.04 per audio-hour. Then:
+Transcription runs locally via parakeet-mlx (installed in step 2; Apple
+Silicon only). The first ingest downloads the ~1.2 GB
+`mlx-community/parakeet-tdt-0.6b-v2` model from Hugging Face — let the
+user know, then it's cached forever. No API key needed.
+
+### 4. (Optional) Load env into the current shell
+
+Only needed when publishing frames (Notion/R2) — ingestion itself needs
+no env vars:
 
 ```bash
-cp .env.example .env
-# write GROQ_API_KEY=<their-key> into .env
-```
-
-### 4. Load env into the current shell
-
-```bash
+cp .env.example .env   # then fill in the publishing vars you need
 set -a; source .env; set +a
 ```
-
-Confirm with `echo $GROQ_API_KEY` — should print the key (not empty).
 
 ### 5. (Optional) Pick a frame-hosting path if they want to publish SOPs
 
@@ -159,8 +158,8 @@ When the user asks you to *"create a skill from <creator>'s content"*,
 
 ## How to ingest new content
 
-Make sure env is loaded first: `set -a; source .env; set +a`. Then for each
-URL the user gives you:
+No env needed for ingestion (transcription is local). Load `.env` only when
+publishing frames to Notion/R2. For each URL the user gives you:
 
 1. **Prepare** — `.venv/bin/python ingest.py prepare <URL> --to <subfolder-name>`.
    Downloads, transcribes, writes `transcript.md`. Output ends with
