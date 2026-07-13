@@ -151,10 +151,9 @@ When the user asks you to *"create a skill from <creator>'s content"*,
    it's installed, otherwise write `SKILL.md` directly into
    `.claude/skills/<creator>-<topic>/`. Cite source videos in the skill
    prose so it stays traceable.
-3. For a Notion SOP: see "How to publish a slug folder as a Notion SOP"
-   in the README — the gist is *write the markdown body using
-   `extracted.md` as the spine*, then run `scripts/upload-frames-to-notion.py`
-   with `--page-id` to embed frames at the right SOP steps.
+3. For a Notion SOP: invoke the `publish-sop` skill
+   (`skills/publish-sop/SKILL.md`) — it covers the whole flow, from
+   URL-or-slug input through frame curation to the assembled Notion page.
 
 ## How to ingest new content
 
@@ -192,7 +191,12 @@ Build plan: `docs/superpowers/plans/2026-04-29-videoskill-implementation.md`.
 ### daniel-priestley
 
 - `daniel-priestley/the-new-rules-of-business-ai-changes-everything/` — The New Rules of Business (AI Changes Everything)
+- `daniel-priestley/what-i-learned-from-being-around-the-top-0-01/` — What I Learned From Being Around The Top 0.01%
 - `daniel-priestley/why-you-must-build-a-youtube-channel/` — Why You Must Build a YouTube Channel
+
+### rank-math-seo
+
+- `rank-math-seo/claude-search-console-mcp-for-free-seo-superpowers/` — Claude + Search Console MCP for FREE SEO Superpowers
 
 ### the-ultimate-google-adwords-training-course
 

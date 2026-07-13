@@ -163,6 +163,25 @@ Then: `/watch-worth-it <url>` → **INGEST** / **PARTIAL** / **SKIP** with
 timestamped reasons, a library-overlap check, and a ready-to-run
 `ingest.py prepare` command when it's a yes.
 
+## /publish-sop — video in, Notion page out
+
+`skills/publish-sop/` completes the pipeline: hand it a video URL (or an
+already-ingested slug folder) and it produces a Notion SOP/Playbook page —
+running the full library ingest first if needed, then composing the page
+with `extracted.md` as the spine and only the informative frames embedded
+(concept cards, whiteboards, screens — never talking heads). Frames are
+Notion-hosted via the private file-uploads API; no public URLs required.
+
+Install the same way (this one does need the repo, since it ingests):
+
+```bash
+ln -s "$(pwd)/skills/publish-sop" ~/.claude/skills/publish-sop   # Claude Code
+ln -s "$(pwd)/skills/publish-sop" ~/.codex/skills/publish-sop    # Codex
+```
+
+The full pipeline: `/watch-worth-it <url>` (should I?) → `/publish-sop <url>`
+(ingest + write it up in Notion with images).
+
 ## Optional — publish a slug folder as a Notion SOP
 
 Once a library entry exists, you can ask Claude Code in this folder to
