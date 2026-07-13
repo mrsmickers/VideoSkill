@@ -32,7 +32,8 @@ def _get_model():
         except ImportError as e:
             raise TranscribeError(
                 "parakeet-mlx is not installed. Fix: .venv/bin/pip install parakeet-mlx "
-                "(Apple Silicon only; first run downloads the ~1.2 GB model from Hugging Face)"
+                "(fastest on Apple Silicon; MLX also ships Linux/Windows wheels. "
+                "First run downloads the ~1.2 GB model from Hugging Face)"
             ) from e
         model_name = os.environ.get(PARAKEET_MODEL_ENV) or DEFAULT_PARAKEET_MODEL
         _model = from_pretrained(model_name)

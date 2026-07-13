@@ -55,8 +55,10 @@ slug — composing the page needs none of this):
     "$REPO_ROOT/.venv/bin/pip" install -r "$REPO_ROOT/requirements.txt"
   }
   ```
-- Tell the user up front: transcription is **local and free but Apple
-  Silicon only** (MLX), and the first ingest downloads the ~1.2 GB
+- Tell the user up front: transcription is **local and free** — fastest on
+  Apple Silicon, but MLX also ships Linux (CPU/CUDA) and Windows wheels, so
+  work out platform specifics as needed (CPU-only transcription is slower
+  but functional). The first ingest downloads the ~1.2 GB
   `parakeet-tdt-0.6b-v2` model from Hugging Face, then it's cached forever.
 
 **3. Notion access.** If no key is found at `VIDEOSKILL_NOTION_API_KEY` or

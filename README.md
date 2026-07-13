@@ -72,9 +72,11 @@ embed them in any tool.
 
 - Python 3.12+
 - `ffmpeg` and `yt-dlp` on your PATH (e.g. `brew install ffmpeg yt-dlp` on macOS)
-- An Apple Silicon Mac — transcription runs locally via
+- Transcription runs locally via
   [parakeet-mlx](https://github.com/senstella/parakeet-mlx) (no API key;
-  the ~1.2 GB model downloads on first use)
+  the ~1.2 GB model downloads on first use). Fastest on Apple Silicon —
+  MLX also ships Linux (CPU/CUDA) and Windows wheels, just expect slower
+  CPU transcription off-Apple
 - Claude Code installed (the cognitive work runs inside a Claude Code session)
 
 ## Setup

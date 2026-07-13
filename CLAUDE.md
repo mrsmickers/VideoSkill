@@ -34,10 +34,11 @@ pip install -r requirements.txt
 
 ### 3. First transcription downloads the model
 
-Transcription runs locally via parakeet-mlx (installed in step 2; Apple
-Silicon only). The first ingest downloads the ~1.2 GB
-`mlx-community/parakeet-tdt-0.6b-v2` model from Hugging Face — let the
-user know, then it's cached forever. No API key needed.
+Transcription runs locally via parakeet-mlx (installed in step 2). Fastest
+on Apple Silicon; MLX also ships Linux (CPU/CUDA) and Windows wheels —
+work out platform specifics as needed. The first ingest downloads the
+~1.2 GB `mlx-community/parakeet-tdt-0.6b-v2` model from Hugging Face —
+let the user know, then it's cached forever. No API key needed.
 
 ### 4. (Optional) Load env into the current shell
 
