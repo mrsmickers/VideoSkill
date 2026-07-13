@@ -76,8 +76,12 @@ go exactly where images will sit.
 
 ## Step 4 — assemble the page
 
-Default parent: **📹 YouTube & Content** (`2dc7f185-0b11-80ed-b789-f4fbf355179e`)
-unless `--parent` or `VIDEOSKILL_NOTION_PARENT_ID` says otherwise.
+Resolve the parent page, in order: an explicit `--parent <page-id>` from the
+user → the `VIDEOSKILL_NOTION_PARENT_ID` env var (set it in the repo's `.env`;
+`set -a; source .env; set +a`) → otherwise ask the user which page SOPs
+should live under. The parent must be shared with your Notion integration
+(page ⋯ menu → Connections). Same-named pages can be found with the API
+search endpoint if you have a title but no ID.
 
 ```bash
 python3 "$SKILL_DIR/scripts/notion_sop.py" create <parent_id> "<Creator> — <Title> (SOP|Playbook)" --icon 🧠
@@ -119,7 +123,11 @@ URL plus a 2–3 bullet note of what's on it. Clean up the scratch chunks.
 
 ## Exemplars (match their shape)
 
-- `3557f185-0b11-81a9-ae87-c200b3351b76` — "Why You Must Build a YouTube
-  Channel (SOP)" — procedural, phases with whiteboard frames.
-- `39c7f185-0b11-81cf-abd4-ef9910648f85` — "What I Learned From Being Around
-  The Top 0.01% (Playbook)" — nine mental models with concept-card frames.
+Two reference pages exist in the maintainer's workspace (search your own
+parent page for them if you have access; the structure is fully described in
+Step 3 either way):
+
+- *"Daniel Priestley — Why You Must Build a YouTube Channel (SOP)"* —
+  procedural: three phases, whiteboard frames at the relevant steps.
+- *"Daniel Priestley — What I Learned From Being Around The Top 0.01%
+  (Playbook)"* — nine mental models, concept-card frames, application to-dos.

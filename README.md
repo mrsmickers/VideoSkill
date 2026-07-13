@@ -38,7 +38,7 @@ Like Loom's AI SOP feature, with two differences:
 
 Each video lives at `library/<creator-or-topic>/<slug>/`:
 
-- `transcript.md` — full timestamped transcript (Whisper-large-v3)
+- `transcript.md` — full timestamped transcript (local Parakeet ASR)
 - `summary.md` — short overview + 5–10 timestamped key points
 - `extracted.md` — frameworks, templates, verbatim quotes with timestamps,
   explicit do's/don'ts. *This is the file the persona reads most.*
@@ -179,15 +179,26 @@ ln -s "$(pwd)/skills/publish-sop" ~/.claude/skills/publish-sop   # Claude Code
 ln -s "$(pwd)/skills/publish-sop" ~/.codex/skills/publish-sop    # Codex
 ```
 
+It can also attach **interactive HTML blocks** (Notion 3.6+) — when a video's
+content *is* a tool (a calculator, a scoring rubric), the skill can rebuild
+it as a self-contained sandboxed HTML block instead of screenshotting it.
+
+Set two things in `.env` (see `.env.example`): `VIDEOSKILL_NOTION_API_KEY`
+(an internal integration token) and `VIDEOSKILL_NOTION_PARENT_ID` (the page
+your SOPs should live under, shared with that integration).
+
 The full pipeline: `/watch-worth-it <url>` (should I?) → `/publish-sop <url>`
 (ingest + write it up in Notion with images).
 
 ## Optional — publish a slug folder as a Notion SOP
 
-Once a library entry exists, you can ask Claude Code in this folder to
-compose a Notion SOP from it: `extracted.md` becomes the spine, frames
-slot in next to the relevant step. Two upload paths ship with the project,
-chosen by privacy:
+**The `/publish-sop` skill (previous section) automates this whole flow** —
+including a stdlib Notion client for page creation and private image
+uploads, so the recipes below are only needed if you want to drive the
+pieces manually or host frames at public URLs. Either way the composition is
+the same: `extracted.md` becomes the spine, frames slot in next to the
+relevant step. Two frame-upload paths ship with the project, chosen by
+privacy:
 
 |                          | `upload-frames-to-notion.py` (recommended) | `upload-frames-to-r2.py` |
 |--------------------------|--------------------------------------------|--------------------------|
@@ -266,24 +277,28 @@ auth and (b) stable.
 
 ### A worked example
 
-[**Daniel Priestley — Why You Must Build a YouTube Channel (SOP)**](https://www.notion.so/Daniel-Priestley-Why-You-Must-Build-a-YouTube-Channel-SOP-3557f1850b1181a9ae87c200b3351b76)
-was authored end-to-end with this flow: 12 frames embedded at their correct
-SOP steps via Notion file_uploads, all citations linked back to the library
-entry. Roughly 5 minutes from URL to published page once the library entry
-was ingested. Source video: Daniel Priestley's
+*"Daniel Priestley — Why You Must Build a YouTube Channel (SOP)"* was
+authored end-to-end with this flow from Daniel Priestley's
 [*Why You Must Build a YouTube Channel*](https://www.youtube.com/watch?v=RoXlS4S0WeA)
-(21 min).
+(21 min): a Source block, a TL;DR, then the SOP in three phases with 12
+whiteboard frames embedded at their correct steps via Notion file_uploads,
+every claim citation-linked back to the library entry. Roughly 5 minutes
+from URL to published page once the library entry was ingested. (The page
+lives in the maintainer's private workspace; the exact structure it follows
+is codified in `skills/publish-sop/SKILL.md`, so your output will match.)
 
 ## Layout
 
-- `ingest.py` — two-phase CLI (`prepare`, `finalize`)
+- `ingest.py` — CLI (`prepare`, `propose-frames`, `finalize`)
 - `lib/` — Python helpers (download, transcribe, frames, meta, index)
-- `scripts/upload-frames-to-notion.py` — frames → Notion private storage (default)
-- `scripts/upload-frames-to-r2.py` — frames → public URLs (alternative)
+- `skills/watch-worth-it/` — cross-agent triage skill (INGEST/PARTIAL/SKIP)
+- `skills/publish-sop/` — cross-agent skill: video URL in → Notion page out
+- `scripts/upload-frames-to-notion.py` — manual: frames → Notion private storage
+- `scripts/upload-frames-to-r2.py` — manual: frames → public URLs
 - `library/<creator-or-topic>/<slug>/` — ingested content (gitignored)
-- `CLAUDE.md` — auto-generated library index, loaded by Claude Code on chat open
-- `docs/superpowers/specs/` — original design doc
-- `docs/superpowers/plans/` — implementation plan used to scaffold the project
+- `CLAUDE.md` — agent instructions + auto-generated library index
+- `tests/` — pytest suite (no network; ffmpeg-synthesised clips)
+- `docs/superpowers/` — design specs and implementation plans
 
 ## Notes
 
