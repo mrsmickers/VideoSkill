@@ -139,6 +139,36 @@ def _cmd_finalize(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_propose_frames(args: argparse.Namespace) -> int:
+    slug_folder = Path(args.slug_folder).resolve()
+    state_path = slug_folder / ".work-state.json"
+    source = slug_folder / ".source.mp4"
+    if not state_path.exists() or not source.exists():
+        print(
+            f"ERROR: no .source.mp4/.work-state.json in {slug_folder} — "
+            "run prepare first (propose-frames only works before finalize)",
+            file=sys.stderr,
+        )
+        return 7
+
+    try:
+        timestamps = frames.detect_scene_timestamps(video_path=source)
+    except frames.FrameExtractError as e:
+        print(f"ERROR: scene detection failed: {e}", file=sys.stderr)
+        return 8
+
+    print(f"{len(timestamps)} candidate frame timestamps (scene changes):")
+    for t in timestamps:
+        mm, ss = divmod(int(t), 60)
+        print(f"  {mm:02d}:{ss:02d}")
+    print(
+        "\nThese are candidates only — cross-reference the transcript (deictic cues"
+        ' like "as you can see" / "look here") and prefer the END of animated'
+        " whiteboard sections. Pick 8-15 and pass them to finalize --frames."
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ingest.py")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -148,6 +178,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--to", required=True, help="subfolder name under library/")
     p.add_argument("--library", default=str(Path(__file__).parent / "library"))
     p.set_defaults(func=_cmd_prepare)
+
+    pf = sub.add_parser("propose-frames", help="print scene-change candidate timestamps for a prepared slug")
+    pf.add_argument("slug_folder")
+    pf.set_defaults(func=_cmd_propose_frames)
 
     f = sub.add_parser("finalize", help="extract frames, write meta.json, regenerate index, cleanup")
     f.add_argument("slug_folder")
