@@ -106,7 +106,7 @@ def _cmd_finalize(args: argparse.Namespace) -> int:
 
     if timestamps:
         try:
-            frames.extract_frames(
+            written = frames.extract_frames(
                 video_path=source_video,
                 timestamps=timestamps,
                 out_dir=slug_folder / "frames",
@@ -114,6 +114,8 @@ def _cmd_finalize(args: argparse.Namespace) -> int:
         except (frames.FrameExtractError, ValueError) as e:
             print(f"ERROR: frame extraction failed: {e}", file=sys.stderr)
             return 6
+        for a, b in frames.near_duplicate_pairs(written):
+            print(f"WARNING: near-identical frames: {a.name} and {b.name} — consider replacing one")
 
     meta.write(
         folder=slug_folder,

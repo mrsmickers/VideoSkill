@@ -84,6 +84,25 @@ def test_finalize_errors_when_state_missing(tmp_path):
     assert rc == 5
 
 
+def test_finalize_warns_on_near_identical_frames(tmp_path, static_clip, capsys):
+    slug = _seed_prepared_slug(tmp_path)
+    # real static-colour clip → two chosen timestamps give identical frames
+    (slug / ".source.mp4").write_bytes(static_clip.read_bytes())
+
+    rc = ingest_cli.run([
+        "finalize",
+        str(slug),
+        "--frames", "00:00,00:02",
+        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--library", str(tmp_path / "library"),
+    ])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "near-identical" in out
+    # warning only — nothing dropped
+    assert len(list((slug / "frames").glob("*.jpg"))) == 2
+
+
 def test_finalize_empty_frames_skips_extraction(tmp_path, mocker):
     slug = _seed_prepared_slug(tmp_path)
 
