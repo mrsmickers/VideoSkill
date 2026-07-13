@@ -26,6 +26,22 @@ def test_propose_frames_prints_mmss_candidates(tmp_path, cut_clip, capsys):
     assert "00:0" in out  # cuts land within the first 4 seconds
 
 
+def test_propose_frames_thins_noisy_candidate_lists(tmp_path, cut_clip, capsys, mocker):
+    slug = _make_prepared_slug(tmp_path, cut_clip)
+    # a fast-cut edit: 200 cuts, several within the same second
+    mocker.patch(
+        "ingest.frames.detect_scene_timestamps",
+        return_value=[i * 0.9 for i in range(200)],
+    )
+    rc = ingest.run(["propose-frames", str(slug)])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "showing 40 of" in out
+    timestamp_lines = [l for l in out.splitlines() if l.startswith("  ")]
+    assert len(timestamp_lines) == 40
+    assert len(set(timestamp_lines)) == 40  # no duplicate mm:ss entries
+
+
 def test_propose_frames_errors_when_source_missing(tmp_path, capsys):
     slug = tmp_path / "no-source"
     slug.mkdir()

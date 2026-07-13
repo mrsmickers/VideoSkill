@@ -159,10 +159,23 @@ def _cmd_propose_frames(args: argparse.Namespace) -> int:
         print(f"ERROR: scene detection failed: {e}", file=sys.stderr)
         return 8
 
-    print(f"{len(timestamps)} candidate frame timestamps (scene changes):")
+    # Sub-second cuts round to the same mm:ss — dedupe, then thin noisy lists
+    # (fast-cut edits produce hundreds of cuts) by even-sampling down to 40.
+    seen: dict[str, None] = {}
     for t in timestamps:
         mm, ss = divmod(int(t), 60)
-        print(f"  {mm:02d}:{ss:02d}")
+        seen.setdefault(f"{mm:02d}:{ss:02d}")
+    stamps = list(seen)
+    cap = 40
+    if len(stamps) > cap:
+        idx = [round(i * (len(stamps) - 1) / (cap - 1)) for i in range(cap)]
+        picked = [stamps[i] for i in dict.fromkeys(idx)]
+        print(f"{len(timestamps)} scene changes detected — showing {len(picked)} of {len(stamps)} distinct seconds:")
+    else:
+        picked = stamps
+        print(f"{len(stamps)} candidate frame timestamps (scene changes):")
+    for stamp in picked:
+        print(f"  {stamp}")
     print(
         "\nThese are candidates only — cross-reference the transcript (deictic cues"
         ' like "as you can see" / "look here") and prefer the END of animated'
