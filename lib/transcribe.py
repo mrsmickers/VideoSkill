@@ -1,16 +1,14 @@
-import random
+import os
 import subprocess
-import time
 from pathlib import Path
 from typing import Iterable, NamedTuple
 
-from groq import (
-    APIConnectionError,
-    APIStatusError,
-    APITimeoutError,
-    Groq,
-    RateLimitError,
-)
+PARAKEET_MODEL_ENV = "VIDEOSKILL_PARAKEET_MODEL"
+DEFAULT_PARAKEET_MODEL = "mlx-community/parakeet-tdt-0.6b-v2"
+# parakeet-tdt-0.6b-v2 handles up to ~24 min in one pass; chunking with overlap
+# keeps memory flat and timestamps stitched on longer audio.
+CHUNK_DURATION_SECONDS = 120.0
+OVERLAP_DURATION_SECONDS = 15.0
 
 
 class TranscribeError(RuntimeError):
@@ -23,10 +21,22 @@ class Segment(NamedTuple):
     text: str
 
 
-_RETRY_EXCEPTIONS = (RateLimitError, APIConnectionError, APITimeoutError)
-_MAX_ATTEMPTS = 5
-_BASE_DELAY_SECONDS = 1.0
-_MAX_DELAY_SECONDS = 60.0
+_model = None
+
+
+def _get_model():
+    global _model
+    if _model is None:
+        try:
+            from parakeet_mlx import from_pretrained
+        except ImportError as e:
+            raise TranscribeError(
+                "parakeet-mlx is not installed. Fix: .venv/bin/pip install parakeet-mlx "
+                "(Apple Silicon only; first run downloads the ~1.2 GB model from Hugging Face)"
+            ) from e
+        model_name = os.environ.get(PARAKEET_MODEL_ENV) or DEFAULT_PARAKEET_MODEL
+        _model = from_pretrained(model_name)
+    return _model
 
 
 def extract_audio(*, video_path: Path, audio_path: Path) -> None:
@@ -47,68 +57,23 @@ def extract_audio(*, video_path: Path, audio_path: Path) -> None:
 
 
 def transcribe_audio(*, audio_path: Path) -> list[Segment]:
-    client = Groq()
+    model = _get_model()
     try:
-        with open(audio_path, "rb") as f:
-            audio_bytes = f.read()
-        response = _call_with_retry(
-            lambda: client.audio.transcriptions.create(
-                file=(audio_path.name, audio_bytes),
-                model="whisper-large-v3",
-                response_format="verbose_json",
-                timestamp_granularities=["segment"],
-            )
+        result = model.transcribe(
+            str(audio_path),
+            chunk_duration=CHUNK_DURATION_SECONDS,
+            overlap_duration=OVERLAP_DURATION_SECONDS,
         )
     except Exception as e:
-        raise TranscribeError(f"Groq transcription failed: {e}") from e
-    return [_segment_from_raw(s) for s in response.segments]
-
-
-def _call_with_retry(func):
-    """Run func() with retry on transient Groq errors (429, 5xx, network).
-    Honours Retry-After when present; otherwise exponential backoff with jitter.
-    """
-    for attempt in range(1, _MAX_ATTEMPTS + 1):
-        try:
-            return func()
-        except _RETRY_EXCEPTIONS as e:
-            if attempt == _MAX_ATTEMPTS:
-                raise
-            time.sleep(_compute_delay(e, attempt))
-        except APIStatusError as e:
-            # Retry only on server-side errors (5xx); client errors propagate.
-            if attempt == _MAX_ATTEMPTS or getattr(e, "status_code", 0) < 500:
-                raise
-            time.sleep(_compute_delay(e, attempt))
-
-
-def _compute_delay(exc: Exception, attempt: int) -> float:
-    retry_after = _retry_after_seconds(exc)
-    if retry_after is not None:
-        return min(retry_after, _MAX_DELAY_SECONDS)
-    delay = min(_BASE_DELAY_SECONDS * (2 ** (attempt - 1)), _MAX_DELAY_SECONDS)
-    return delay + random.uniform(0, delay * 0.25)  # jitter so parallel callers don't sync
-
-
-def _retry_after_seconds(exc: Exception) -> float | None:
-    response = getattr(exc, "response", None)
-    if response is None:
-        return None
-    headers = getattr(response, "headers", None) or {}
-    raw = headers.get("retry-after") or headers.get("Retry-After")
-    if raw is None:
-        return None
-    try:
-        return float(raw)
-    except (TypeError, ValueError):
-        return None
-
-
-def _segment_from_raw(raw) -> Segment:
-    """Normalise a Groq response segment (dict or object) into a Segment."""
-    if isinstance(raw, dict):
-        return Segment(start=float(raw["start"]), end=float(raw["end"]), text=str(raw["text"]))
-    return Segment(start=float(raw.start), end=float(raw.end), text=str(raw.text))
+        raise TranscribeError(f"Parakeet transcription failed: {e}") from e
+    segments = [
+        Segment(start=float(s.start), end=float(s.end), text=str(s.text).strip())
+        for s in result.sentences
+        if str(s.text).strip()
+    ]
+    if not segments:
+        raise TranscribeError("Parakeet returned no sentences")
+    return segments
 
 
 def format_transcript(segments: Iterable) -> str:
