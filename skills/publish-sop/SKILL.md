@@ -23,11 +23,53 @@ lives inside the VideoSkill repo, so the repo root is two levels up from the
 ```bash
 SKILL_DIR="<absolute dir of the SKILL.md you just read>"
 REPO_ROOT="$(cd "$(dirname "$(readlink -f "$SKILL_DIR/SKILL.md")")/../.." && pwd)"
-[ -f "$REPO_ROOT/ingest.py" ] || echo "ERROR: VideoSkill repo not found at $REPO_ROOT"
+[ -f "$REPO_ROOT/ingest.py" ] || echo "VideoSkill repo not found at $REPO_ROOT — see Step 0 (clone it first)"
 ```
 
 The Notion helper is `SKILL_DIR/scripts/notion_sop.py` (pure stdlib; key from
 `VIDEOSKILL_NOTION_API_KEY` or `~/.config/notion/api_key`).
+
+## Step 0 — first-run setup gate
+
+Three prerequisites; check them in order and walk the user through whatever
+is missing. Once all three pass on a machine they stay passed — skip this
+on later runs.
+
+**1. The VideoSkill repo.** This skill cannot run from a bare copy of its
+folder — it ingests into the repo's `library/` and uses its `ingest.py`.
+If the `REPO_ROOT` check above failed:
+
+```bash
+git clone https://github.com/mrsmickers/VideoSkill.git
+ln -s "$(pwd)/VideoSkill/skills/publish-sop" ~/.claude/skills/publish-sop
+```
+
+**2. Ingestion dependencies** (skip when publishing an already-ingested
+slug — composing the page needs none of this):
+
+- `ffmpeg` + `yt-dlp` on PATH (macOS: `brew install ffmpeg yt-dlp`).
+- The repo venv with parakeet-mlx:
+  ```bash
+  "$REPO_ROOT/.venv/bin/python" -c "import parakeet_mlx" 2>/dev/null || {
+    python3 -m venv "$REPO_ROOT/.venv"
+    "$REPO_ROOT/.venv/bin/pip" install -r "$REPO_ROOT/requirements.txt"
+  }
+  ```
+- Tell the user up front: transcription is **local and free but Apple
+  Silicon only** (MLX), and the first ingest downloads the ~1.2 GB
+  `parakeet-tdt-0.6b-v2` model from Hugging Face, then it's cached forever.
+
+**3. Notion access.** If no key is found at `VIDEOSKILL_NOTION_API_KEY` or
+`~/.config/notion/api_key`, walk the user through it (one-time, ~2 min):
+
+1. Create an internal integration at
+   [notion.so/profile/integrations](https://www.notion.so/profile/integrations)
+   and copy the secret (`ntn_…`).
+2. In Notion, open (or create) the parent page where SOPs should live →
+   `⋯` menu → *Connections* → add the integration.
+3. Store both values in the repo's `.env` (gitignored — see `.env.example`):
+   `VIDEOSKILL_NOTION_API_KEY=…` and `VIDEOSKILL_NOTION_PARENT_ID=<page UUID
+   from its URL>`, then `set -a; source .env; set +a`.
 
 ## Step 1 — ensure the video is in the library
 

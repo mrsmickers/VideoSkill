@@ -26,13 +26,20 @@ SKILL_DIR="<absolute dir of the SKILL.md you just read>"
 [ -f "$SKILL_DIR/scripts/triage.py" ] || echo "ERROR: triage.py not found under $SKILL_DIR"
 ```
 
+## Step 0 — prerequisites (self-checking)
+
+The script needs only `yt-dlp` and `ffmpeg` on PATH — no venv, no API keys.
+It checks for them itself: **exit code 3** means something's missing and
+stderr lists the exact install command per OS. Relay that to the user — or,
+on macOS with Homebrew present, offer to run `brew install ffmpeg yt-dlp`
+for them and re-run. Don't debug tracebacks that a missing binary would
+never produce; check exit 3 first.
+
 ## Step 1 — run the triage script
 
 ```bash
 python3 "$SKILL_DIR/scripts/triage.py" "<url>"
-```
-
-Needs only `yt-dlp` and `ffmpeg` on PATH — no venv, no API keys. Default is
+``` Default is
 captions-only (no video download, a few seconds). Add `--frames 6` to also
 pull a 480p copy and extract ~6 scene-change frames (use when the creator is
 whiteboard/diagram-heavy and visuals decide the value). If frames were

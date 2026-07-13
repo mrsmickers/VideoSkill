@@ -37,6 +37,16 @@ def test_format_transcript_timestamps():
     assert triage.format_transcript(segs) == "[01:05] Step one."
 
 
+def test_main_exits_with_install_hints_when_binaries_missing(mocker, capsys):
+    mocker.patch.object(triage.shutil, "which", return_value=None)
+    rc = triage.main(["https://youtu.be/abc"])
+    err = capsys.readouterr().err
+    assert rc == 3
+    assert "yt-dlp" in err and "ffmpeg" in err
+    assert "brew install" in err  # macOS hint
+    assert "winget" in err or "apt" in err  # other-OS hints
+
+
 def test_is_safe_source():
     assert triage.is_safe_source("https://youtu.be/abc")
     assert not triage.is_safe_source("--exec=evil")

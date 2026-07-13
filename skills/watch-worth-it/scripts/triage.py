@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -297,6 +298,11 @@ def build_report(info: dict, segments: list[dict], transcript_source: str,
 
 # --- main ---------------------------------------------------------------------
 
+def require_binaries() -> list[str]:
+    """Names of required binaries missing from PATH (empty = ready)."""
+    return [name for name in ("yt-dlp", "ffmpeg", "ffprobe") if shutil.which(name) is None]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="triage.py")
     parser.add_argument("url")
@@ -304,6 +310,15 @@ def main(argv: list[str] | None = None) -> int:
                         help="also download 480p video and extract N scene frames")
     parser.add_argument("--work-dir", default=None)
     args = parser.parse_args(argv)
+
+    missing = require_binaries()
+    if missing:
+        print(f"SETUP NEEDED: missing on PATH: {', '.join(missing)}", file=sys.stderr)
+        print("Install (ffprobe ships with ffmpeg):", file=sys.stderr)
+        print("  macOS:          brew install ffmpeg yt-dlp", file=sys.stderr)
+        print("  Debian/Ubuntu:  sudo apt install ffmpeg && pipx install yt-dlp", file=sys.stderr)
+        print("  Windows:        winget install Gyan.FFmpeg yt-dlp.yt-dlp", file=sys.stderr)
+        return 3
 
     if not is_safe_source(args.url):
         print(f"ERROR: refusing suspicious source: {args.url!r}", file=sys.stderr)
