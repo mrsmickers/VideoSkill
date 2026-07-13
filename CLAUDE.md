@@ -171,10 +171,14 @@ publishing frames to Notion/R2. For each URL the user gives you:
    do's/don'ts. The quality bar here is high; this is the file Claude will
    read to answer questions later.
 5. **Pick 8–15 frame timestamps** that capture the most important visuals —
-   whiteboards, diagrams, key text overlays. Animated whiteboards build up
-   over time, so target the *end* of each animated section, not the middle.
-   Frames are auto-capped at 1600px to stay under Anthropic's many-image
-   dimension limit.
+   whiteboards, diagrams, key text overlays. Two inputs help:
+   run `.venv/bin/python ingest.py propose-frames <slug_folder>` for
+   scene-change candidates, and scan the transcript for deictic cues
+   ("as you can see", "look here", "notice this") — moments the speaker
+   points at something on screen that scene detection may miss.
+   Animated whiteboards build up over time, so target the *end* of each
+   animated section, not the middle. Frames are auto-capped at 1600px to
+   stay under Anthropic's many-image dimension limit.
 6. **Finalize** — `.venv/bin/python ingest.py finalize <slug_folder> --frames "00:35,04:35,..."`.
    Extracts frames, writes `meta.json`, regenerates this `CLAUDE.md`,
    cleans up the source mp4.
