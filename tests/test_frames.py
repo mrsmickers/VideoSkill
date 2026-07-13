@@ -68,6 +68,22 @@ def test_detect_scene_timestamps_static_clip_finds_none(static_clip):
     assert frames.detect_scene_timestamps(video_path=static_clip) == []
 
 
+def test_near_duplicate_pairs_fails_open_when_ffmpeg_missing(tmp_path, mocker):
+    a, b = tmp_path / "a.jpg", tmp_path / "b.jpg"
+    a.write_bytes(b"x")
+    b.write_bytes(b"x")
+    mocker.patch("lib.frames.subprocess.run", side_effect=FileNotFoundError("ffmpeg"))
+    assert frames.near_duplicate_pairs([a, b]) == []
+
+
+def test_detect_scene_timestamps_clear_error_when_ffmpeg_missing(tmp_path, mocker):
+    video = tmp_path / "v.mp4"
+    video.touch()
+    mocker.patch("lib.frames.subprocess.run", side_effect=FileNotFoundError("ffmpeg"))
+    with pytest.raises(frames.FrameExtractError, match="ffmpeg"):
+        frames.detect_scene_timestamps(video_path=video)
+
+
 def test_near_duplicate_pairs_flags_identical_frames(tmp_path, static_clip, cut_clip):
     a = frames.extract_frames(video_path=static_clip, timestamps=["00:00"], out_dir=tmp_path / "x")[0]
     b = frames.extract_frames(video_path=static_clip, timestamps=["00:02"], out_dir=tmp_path / "y")[0]

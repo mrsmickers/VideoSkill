@@ -77,7 +77,10 @@ def detect_scene_timestamps(*, video_path: Path, threshold: float = SCENE_THRESH
         "-vf", f"select='gt(scene\\,{threshold})',showinfo",
         "-f", "null", "-",
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+    except FileNotFoundError as e:
+        raise FrameExtractError("ffmpeg not found on PATH") from e
     if result.returncode != 0:
         raise FrameExtractError(f"ffmpeg scene detection failed: {result.stderr.strip()}")
     return [round(float(m.group(1)), 2) for m in _SHOWINFO_TS_RE.finditer(result.stderr)]
@@ -91,7 +94,10 @@ def _gray_thumb(path: Path) -> bytes:
         "-vf", f"scale={DEDUP_THUMB}:{DEDUP_THUMB},format=gray",
         "-f", "rawvideo", "-",
     ]
-    result = subprocess.run(cmd, capture_output=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True)
+    except FileNotFoundError:
+        return b""  # fail-open: no ffmpeg → treat as not-a-duplicate
     if result.returncode != 0 or len(result.stdout) != DEDUP_THUMB * DEDUP_THUMB:
         return b""  # fail-open: caller treats as not-a-duplicate
     return result.stdout
