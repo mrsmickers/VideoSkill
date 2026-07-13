@@ -61,17 +61,38 @@ def parse_vtt(path: str) -> list[dict]:
     return _dedupe(segments)
 
 
+def _trim_overlap(prev_text: str, text: str) -> str:
+    """Drop the longest run of words that ends prev_text AND starts text.
+
+    YouTube auto-subs repeat the tail of one cue as the head of the next
+    ("…almost built" / "almost built flawlessly…"); this strips the repeat.
+    """
+    prev_words = prev_text.split()
+    words = text.split()
+    for k in range(min(len(prev_words), len(words)), 0, -1):
+        if prev_words[-k:] == words[:k]:
+            return " ".join(words[k:])
+    return text
+
+
 def _dedupe(segments: list[dict]) -> list[dict]:
     """Collapse rolling duplicates common in YouTube auto-subs."""
     out: list[dict] = []
     for seg in segments:
-        if out and seg["text"] == out[-1]["text"]:
-            out[-1]["end"] = seg["end"]
-            continue
-        if out and seg["text"].startswith(out[-1]["text"] + " "):
-            out[-1]["text"] = seg["text"]
-            out[-1]["end"] = seg["end"]
-            continue
+        if out:
+            if seg["text"] == out[-1]["text"]:
+                out[-1]["end"] = seg["end"]
+                continue
+            if seg["text"].startswith(out[-1]["text"] + " "):
+                out[-1]["text"] = seg["text"]
+                out[-1]["end"] = seg["end"]
+                continue
+            trimmed = _trim_overlap(out[-1]["text"], seg["text"])
+            if not trimmed:
+                out[-1]["end"] = seg["end"]
+                continue
+            if trimmed != seg["text"]:
+                seg = {**seg, "text": trimmed}
         out.append(seg)
     return out
 

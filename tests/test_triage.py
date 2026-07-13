@@ -18,6 +18,20 @@ def test_parse_vtt_collapses_rolling_duplicates():
     assert segments[0]["end"] == 4.0
 
 
+def test_parse_vtt_trims_overlapping_tail_head_duplicates(tmp_path):
+    # YouTube auto-subs often repeat the tail of one cue as the head of the next.
+    vtt = tmp_path / "o.vtt"
+    vtt.write_text(
+        "WEBVTT\n\n"
+        "00:00:00.000 --> 00:00:02.000\nYouTube channels are almost built\n\n"
+        "00:00:02.000 --> 00:00:04.000\nalmost built flawlessly to be marketing\n\n"
+        "00:00:04.000 --> 00:00:06.000\nflawlessly to be marketing campaigns for you\n"
+    )
+    segments = triage.parse_vtt(str(vtt))
+    joined = " ".join(s["text"] for s in segments)
+    assert joined == "YouTube channels are almost built flawlessly to be marketing campaigns for you"
+
+
 def test_format_transcript_timestamps():
     segs = [{"start": 65.0, "end": 70.0, "text": "Step one."}]
     assert triage.format_transcript(segs) == "[01:05] Step one."
