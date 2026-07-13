@@ -144,6 +144,25 @@ their methodology as a Claude Code skill (using the
 (see the next section). Both work off the same `extracted.md` files the
 persona mode uses.
 
+## /watch-worth-it — triage before you ingest
+
+`skills/watch-worth-it/` is a self-contained, host-agnostic agent skill that
+answers "is this video worth a full ingest?" using metadata + captions only
+(no video download; optional `--frames N` low-res visual pass). It needs just
+`yt-dlp` and `ffmpeg` — no venv, no API keys.
+
+Install by symlink into whichever agents you use:
+
+```bash
+ln -s "$(pwd)/skills/watch-worth-it" ~/.claude/skills/watch-worth-it   # Claude Code
+ln -s "$(pwd)/skills/watch-worth-it" ~/.codex/skills/watch-worth-it    # Codex
+# Hermes / other agentskills.io hosts: symlink the same folder into their skills dir
+```
+
+Then: `/watch-worth-it <url>` → **INGEST** / **PARTIAL** / **SKIP** with
+timestamped reasons, a library-overlap check, and a ready-to-run
+`ingest.py prepare` command when it's a yes.
+
 ## Optional — publish a slug folder as a Notion SOP
 
 Once a library entry exists, you can ask Claude Code in this folder to
