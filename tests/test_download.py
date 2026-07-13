@@ -41,6 +41,34 @@ def test_download_invokes_yt_dlp_with_expected_args(tmp_path, mocker):
     assert result["info"]["duration"] == 1834
 
 
+def test_download_hardens_argv_and_caps_resolution(tmp_path, mocker):
+    fake_info = json.loads(FIXTURE.read_text())
+    (tmp_path / "video.info.json").write_text(json.dumps(fake_info))
+    (tmp_path / "video.mp4").touch()
+    run_mock = mocker.patch(
+        "lib.download.subprocess.run",
+        return_value=MagicMock(returncode=0, stdout="", stderr=""),
+    )
+
+    download.download_video(url="https://youtu.be/abc", out_dir=tmp_path, out_basename="video")
+
+    cmd = run_mock.call_args.args[0]
+    # option-injection hardening: URL is the last element, preceded by `--`
+    assert cmd[-1] == "https://youtu.be/abc"
+    assert cmd[-2] == "--"
+    # capped resolution + parallel fragments
+    assert "-N" in cmd and "8" in cmd
+    fmt = cmd[cmd.index("-f") + 1]
+    assert "height<=1080" in fmt
+
+
+def test_download_rejects_dash_prefixed_source(tmp_path, mocker):
+    run_mock = mocker.patch("lib.download.subprocess.run")
+    with pytest.raises(download.DownloadError, match="refusing"):
+        download.download_video(url="--exec=evil", out_dir=tmp_path, out_basename="v")
+    run_mock.assert_not_called()
+
+
 def test_download_raises_on_yt_dlp_failure(tmp_path, mocker):
     mocker.patch(
         "lib.download.subprocess.run",

@@ -15,6 +15,9 @@ class DownloadResult(TypedDict):
 
 
 def download_video(*, url: str, out_dir: Path, out_basename: str) -> DownloadResult:
+    if url.startswith("-"):
+        raise DownloadError(f"refusing suspicious source (starts with '-'): {url!r}")
+
     out_dir.mkdir(parents=True, exist_ok=True)
     out_template = str(out_dir / f"{out_basename}.%(ext)s")
 
@@ -22,9 +25,13 @@ def download_video(*, url: str, out_dir: Path, out_basename: str) -> DownloadRes
         "yt-dlp",
         "--no-playlist",
         "--write-info-json",
+        # 1080p is ample for 1600px-capped frames; -N 8 parallelises fragments.
+        "-N", "8",
+        "-f", "bv*[height<=1080]+ba/b[height<=1080]/bv+ba/b",
         "--merge-output-format", "mp4",
         "--restrict-filenames",
         "-o", out_template,
+        "--",
         url,
     ]
 
