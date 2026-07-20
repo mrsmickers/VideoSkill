@@ -156,6 +156,18 @@ When the user asks you to *"create a skill from <creator>'s content"*,
    (`skills/publish-sop/SKILL.md`) — it covers the whole flow, from
    URL-or-slug input through frame curation to the assembled Notion page.
 
+### Recreating a video's whiteboard visuals in tldraw
+
+When a library video's `frames/` contain hand-drawn whiteboard or diagram
+visuals (e.g. Daniel Priestley's post-production boards), they can be
+rebuilt as live canvases in the local tldraw desktop app — including a
+staged build-up reveal (click, arrow keys, or presenter clicker) for
+screen-recording Simon's own videos in the same style. Invoke the
+`tldraw-offline` skill and follow its
+`references/video-whiteboard-reveal.md` — style recipe, gotchas, and a
+working reveal-rig script, proven against
+`daniel-priestley/why-you-must-build-a-youtube-channel` frames (Jul 2026).
+
 ## How to ingest new content
 
 No env needed for ingestion (transcription is local). Load `.env` only when
