@@ -22,3 +22,6 @@ library/
 # Local secrets / config
 .env
 .env.local
+
+# Claude Code worktrees
+.claude/worktrees/
