@@ -192,7 +192,7 @@ publishing frames to Notion/R2. For each URL the user gives you:
    animated section, not the middle. Frames are auto-capped at 1600px to
    stay under Anthropic's many-image dimension limit.
 6. **Finalize** — `.venv/bin/python ingest.py finalize <slug_folder> --frames "00:35,04:35,..."`.
-   Extracts frames, writes `meta.json`, regenerates this `CLAUDE.md`,
+   Extracts frames, writes `meta.json`, regenerates this `AGENTS.md`,
    cleans up the source mp4.
 
 Design notes: `docs/superpowers/specs/2026-04-29-videoskill-design.md`.
