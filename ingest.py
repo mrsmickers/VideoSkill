@@ -132,10 +132,10 @@ def _cmd_finalize(args: argparse.Namespace) -> int:
         if p.exists():
             p.unlink()
 
-    # Regenerate CLAUDE.md.
+    # Regenerate the standalone library index.
     library_root = Path(args.library).resolve()
-    claude_md = Path(args.claude_md).resolve()
-    index.regenerate(claude_md_path=claude_md, library_root=library_root)
+    index_path = Path(args.index_path).resolve()
+    index.regenerate(index_path=index_path, library_root=library_root)
 
     print(f"finalized: {slug_folder}")
     return 0
@@ -202,7 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
     f.add_argument("slug_folder")
     f.add_argument("--frames", default="", help="comma-separated mm:ss timestamps")
     f.add_argument("--library", default=str(Path(__file__).parent / "library"))
-    f.add_argument("--claude-md", default=str(Path(__file__).parent / "CLAUDE.md"))
+    f.add_argument("--index", dest="index_path", default=str(Path(__file__).parent / "library-index.md"))
     f.set_defaults(func=_cmd_finalize)
 
     return parser

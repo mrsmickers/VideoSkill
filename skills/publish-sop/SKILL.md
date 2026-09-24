@@ -79,7 +79,7 @@ slug — composing the page needs none of this):
   present): skip to Step 2.
 - Given a **URL**: check whether it's already ingested —
   `grep -rl "<url>" "$REPO_ROOT"/library/*/*/meta.json`. If not, run the full
-  ingest per the repo's CLAUDE.md "How to ingest new content":
+  ingest per the repo's AGENTS.md "How to ingest new content":
   `prepare` → read transcript → write `summary.md` + `extracted.md` →
   `propose-frames` + transcript deictic cues → `finalize --frames …`.
   (Needs the repo venv — transcription is local Parakeet, ~1 min per

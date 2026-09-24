@@ -1,0 +1,264 @@
+# VideoSkill library
+
+Library of expert video content. Each video lives in `library/<creator-or-topic>/<slug>/`
+with `meta.json`, `transcript.md`, `summary.md`, `extracted.md`, and `frames/`.
+
+When the user asks about a creator's content, scan their subfolder's `summary.md`
+and `extracted.md` files first; only open transcripts for exact quotes.
+
+<!-- BEGIN AUTO-INDEX -->
+## Library
+
+### daniel-priestley
+
+- `daniel-priestley/the-new-rules-of-business-ai-changes-everything/` — The New Rules of Business (AI Changes Everything)
+- `daniel-priestley/what-i-learned-from-being-around-the-top-0-01/` — What I Learned From Being Around The Top 0.01%
+- `daniel-priestley/why-you-must-build-a-youtube-channel/` — Why You Must Build a YouTube Channel
+
+### rank-math-seo
+
+- `rank-math-seo/claude-search-console-mcp-for-free-seo-superpowers/` — Claude + Search Console MCP for FREE SEO Superpowers
+
+### the-ultimate-google-adwords-training-course
+
+- `the-ultimate-google-adwords-training-course/s01-l01-welcome-to-google-ads-masterclass/` — Welcome to Google Ads Masterclass!
+- `the-ultimate-google-adwords-training-course/s01-l02-link-to-isaac-rudanskys-digital-advertising-superstars-facebook-group/` — Link to Isaac Rudansky's Digital Advertising Superstars Facebook Group
+- `the-ultimate-google-adwords-training-course/s01-l03-all-slide-decks-for-course/` — All Slide Decks for Course
+- `the-ultimate-google-adwords-training-course/s01-l04-how-to-make-the-most-of-this-course-plus-a-sneak-peak-of-whats-to-come/` — How to Make the Most of This Course, Plus a Sneak Peak of What's to Come!
+- `the-ultimate-google-adwords-training-course/s01-l05-google-ads-formula-calculator/` — Google Ads Formula Calculator
+- `the-ultimate-google-adwords-training-course/s01-l06-adwords-formula-calculator-i-built-for-you/` — AdWords Formula Calculator I Built For You
+- `the-ultimate-google-adwords-training-course/s01-l07-what-is-google-ads/` — What is Google Ads?
+- `the-ultimate-google-adwords-training-course/s01-l08-where-do-google-ads-show-up/` — Where do Google Ads Show Up?
+- `the-ultimate-google-adwords-training-course/s01-l09-complimentary-adventure-media-account-audit-exclusions-apply/` — Complimentary AdVenture Media Account Audit (exclusions apply)
+- `the-ultimate-google-adwords-training-course/s02-l01-the-key-metrics-of-google-ads/` — The Key Metrics of Google Ads
+- `the-ultimate-google-adwords-training-course/s02-l02-understanding-the-google-ads-auction/` — Understanding the Google Ads Auction
+- `the-ultimate-google-adwords-training-course/s02-l03-what-determines-your-actual-cpc/` — What Determines Your Actual CPC?
+- `the-ultimate-google-adwords-training-course/s02-l04-how-does-the-google-ads-auction-operate/` — How Does the Google Ads Auction Operate
+- `the-ultimate-google-adwords-training-course/s02-l05-balancing-cpc-against-conversion-rate-and-aov/` — Balancing CPC Against Conversion Rate and AOV
+- `the-ultimate-google-adwords-training-course/s02-l06-google-ads-key-terminology-you-need-to-know/` — Google Ads Key Terminology You Need to Know
+- `the-ultimate-google-adwords-training-course/s02-l07-the-core-structure-and-functionality-of-a-google-ads-account/` — The Core Structure and Functionality of a Google Ads Account
+- `the-ultimate-google-adwords-training-course/s03-l01-introduction-to-the-3-pillars-of-google-ads/` — Introduction to the 3 Pillars of Google Ads
+- `the-ultimate-google-adwords-training-course/s04-l01-understanding-the-user-funnel/` — Understanding the User Funnel
+- `the-ultimate-google-adwords-training-course/s04-l02-keywords-vs-queries-terms-vs-negative-keywords/` — Keywords vs. Queries Terms vs. Negative Keywords
+- `the-ultimate-google-adwords-training-course/s04-l03-keyword-match-types/` — Keyword Match Types
+- `the-ultimate-google-adwords-training-course/s04-l04-audience-targeting-options/` — Audience Targeting Options
+- `the-ultimate-google-adwords-training-course/s04-l05-search-terms-report/` — Search Terms Report
+- `the-ultimate-google-adwords-training-course/s04-l06-brand-inclusions-and-brand-exclusions-list/` — Brand Inclusions and Brand Exclusions List
+- `the-ultimate-google-adwords-training-course/s04-l07-understanding-negative-keywords/` — Understanding Negative Keywords
+- `the-ultimate-google-adwords-training-course/s04-l08-keyword-and-search-term-dashboard-walkthrough/` — Keyword and Search Term Dashboard Walkthrough
+- `the-ultimate-google-adwords-training-course/s05-l01-understanding-targeting-vs-observation-vs-exclusion/` — Understanding Targeting vs. Observation vs. Exclusion
+- `the-ultimate-google-adwords-training-course/s05-l02-audience-focused-strategies/` — Audience-Focused Strategies
+- `the-ultimate-google-adwords-training-course/s05-l03-analyzing-audience-performance-reports/` — Analyzing Audience Performance Reports
+- `the-ultimate-google-adwords-training-course/s05-l04-audience-testing-ideas/` — Audience Testing Ideas
+- `the-ultimate-google-adwords-training-course/s06-l01-understanding-the-user-the-right-messaging/` — Understanding the User - The Right Messaging
+- `the-ultimate-google-adwords-training-course/s06-l02-the-psychological-principles-of-ad-copy/` — The Psychological Principles of Ad Copy
+- `the-ultimate-google-adwords-training-course/s06-l03-isaacs-top-5-tips-for-ad-copy/` — Isaac's Top 5 Tips for Ad Copy
+- `the-ultimate-google-adwords-training-course/s06-l04-isaacs-top-5-tips-for-creatives/` — Isaac's Top 5 Tips for Creatives
+- `the-ultimate-google-adwords-training-course/s07-l01-managing-costs/` — Managing Costs
+- `the-ultimate-google-adwords-training-course/s07-l02-google-ads-bidding-strategies/` — Google Ads Bidding Strategies
+- `the-ultimate-google-adwords-training-course/s07-l03-the-case-for-smart-bidding/` — The Case for Smart Bidding
+- `the-ultimate-google-adwords-training-course/s07-l04-the-case-for-manual-bidding/` — The Case for Manual Bidding
+- `the-ultimate-google-adwords-training-course/s08-l01-how-to-analyze-the-insights-reports-to-understand-competition/` — How to Analyze the Insights Reports to Understand Competition
+- `the-ultimate-google-adwords-training-course/s08-l02-supply-demand-competitiveness/` — Supply / Demand = Competitiveness
+- `the-ultimate-google-adwords-training-course/s08-l03-troubleshooting-high-costs/` — Troubleshooting High Costs
+- `the-ultimate-google-adwords-training-course/s09-l01-managing-costs-with-conversion-rate/` — Managing Costs with Conversion Rate
+- `the-ultimate-google-adwords-training-course/s09-l02-high-quality-conversion-data/` — High-Quality Conversion Data
+- `the-ultimate-google-adwords-training-course/s09-l03-data-budget-time/` — Data. Budget. Time.
+- `the-ultimate-google-adwords-training-course/s09-l04-understanding-ai-confidence/` — Understanding AI Confidence
+- `the-ultimate-google-adwords-training-course/s09-l05-practical-applications/` — Practical Applications
+- `the-ultimate-google-adwords-training-course/s10-l01-overview-of-campaign-types/` — Overview of Campaign Types
+- `the-ultimate-google-adwords-training-course/s10-l02-the-anatomy-of-a-search-campaign/` — The Anatomy of a Search Campaign
+- `the-ultimate-google-adwords-training-course/s10-l03-branded-search-philosophy/` — Branded Search Philosophy
+- `the-ultimate-google-adwords-training-course/s10-l04-new-search-campaigns-for-e-commerce-and-lead-gen/` — New Search Campaigns for E-commerce and Lead Gen
+- `the-ultimate-google-adwords-training-course/s10-l05-value-based-bidding-for-lead-gen/` — Value-Based Bidding for Lead Gen
+- `the-ultimate-google-adwords-training-course/s10-l06-example-search-campaign-set-up/` — Example Search Campaign Set Up
+- `the-ultimate-google-adwords-training-course/s10-l07-common-search-campaign-questions/` — Common Search Campaign Questions
+- `the-ultimate-google-adwords-training-course/s10-l08-top-search-campaign-tips/` — Top Search Campaign Tips
+- `the-ultimate-google-adwords-training-course/s10-l09-10-strategies-for-search-success/` — 10 Strategies for Search Success
+- `the-ultimate-google-adwords-training-course/s11-l01-understanding-responsive-search-ads-rsa/` — Understanding Responsive Search Ads (RSA)
+- `the-ultimate-google-adwords-training-course/s11-l02-top-3-problems-with-rsas-and-5-tactical-solutions/` — Top 3 Problems with RSA's and 5 Tactical Solutions
+- `the-ultimate-google-adwords-training-course/s12-l01-demand-gen-campaigns-and-where-they-appear/` — Demand Gen Campaigns and Where They Appear
+- `the-ultimate-google-adwords-training-course/s12-l02-demand-gen-campaign-tips/` — Demand Gen Campaign Tips
+- `the-ultimate-google-adwords-training-course/s12-l03-app-campaigns-and-understanding-your-levers/` — App Campaigns and Understanding Your Levers
+- `the-ultimate-google-adwords-training-course/s13-l01-the-conversion-tracking-layers/` — The Conversion Tracking Layers
+- `the-ultimate-google-adwords-training-course/s13-l02-data-driven-attribution/` — Data-Driven Attribution
+- `the-ultimate-google-adwords-training-course/s13-l03-primary-conversion-actions/` — Primary Conversion Actions
+- `the-ultimate-google-adwords-training-course/s13-l04-secondary-conversion-actions/` — Secondary Conversion Actions
+- `the-ultimate-google-adwords-training-course/s13-l05-offline-conversion-tracking/` — Offline Conversion Tracking
+- `the-ultimate-google-adwords-training-course/s13-l06-enhanced-conversions/` — Enhanced Conversions
+- `the-ultimate-google-adwords-training-course/s13-l07-consent-mode-and-conversion-modeling/` — Consent Mode and Conversion Modeling
+- `the-ultimate-google-adwords-training-course/s13-l08-conversion-adjustments-for-returns-partial-returns-or-cancellations/` — Conversion Adjustments for Returns, Partial Returns, or Cancellations
+- `the-ultimate-google-adwords-training-course/s14-l01-7-rules-of-the-game/` — 7 Rules of the Game
+- `the-ultimate-google-adwords-training-course/s14-l02-7-things-you-should-never-do/` — 7 Things You Should NEVER Do
+- `the-ultimate-google-adwords-training-course/s14-l03-the-principles-of-a-profitable-and-scalable-account/` — The Principles of a Profitable and Scalable Account
+- `the-ultimate-google-adwords-training-course/s15-l01-different-types-of-audits/` — Different Types of Audits
+- `the-ultimate-google-adwords-training-course/s15-l02-guide-to-our-google-ads-audit-process/` — Guide to our Google Ads Audit Process
+- `the-ultimate-google-adwords-training-course/s15-l03-a-quick-wins-cheat-sheet/` — A Quick Wins Cheat Sheet
+- `the-ultimate-google-adwords-training-course/s15-l04-key-takeaways/` — Key Takeaways
+- `the-ultimate-google-adwords-training-course/s15-l05-free-audit/` — Free Audit
+- `the-ultimate-google-adwords-training-course/s16-l01-download-course-slides/` — Download Course Slides!
+- `the-ultimate-google-adwords-training-course/s16-l02-creating-your-firs-gooogle-ads-account/` — Creating Your Firs Gooogle Ads Account
+- `the-ultimate-google-adwords-training-course/s16-l03-understanding-the-google-ads-account-hierarchy/` — Understanding the Google Ads Account Hierarchy
+- `the-ultimate-google-adwords-training-course/s16-l04-using-your-website-navigational-structure-to-structure-your-google-ads-c/` — Using Your Website Navigational Structure to Structure Your Google Ads Campaigns
+- `the-ultimate-google-adwords-training-course/s16-l05-updated-dashboard-walkthrough/` — Updated Dashboard Walkthrough
+- `the-ultimate-google-adwords-training-course/s16-l06-understanding-network-settings/` — Understanding Network Settings
+- `the-ultimate-google-adwords-training-course/s16-l07-understanding-location-targeting/` — Understanding Location Targeting
+- `the-ultimate-google-adwords-training-course/s16-l08-configuring-location-targeting-in-google-ads/` — Configuring Location Targeting in Google Ads
+- `the-ultimate-google-adwords-training-course/s16-l09-viewing-location-reports-in-google-ads/` — Viewing Location Reports in Google Ads
+- `the-ultimate-google-adwords-training-course/s16-l10-understanding-advanced-location-options/` — Understanding Advanced Location Options
+- `the-ultimate-google-adwords-training-course/s16-l11-setting-and-configuring-languages/` — Setting and Configuring Languages
+- `the-ultimate-google-adwords-training-course/s16-l12-setting-your-daily-budget-and-understanding-how-daily-budgets-work-in-go/` — Setting Your Daily Budget and Understanding How Daily Budgets Work in Google Ads
+- `the-ultimate-google-adwords-training-course/s16-l13-finding-your-hourly-reports-in-the-google-ads-interface/` — Finding Your Hourly Reports in the Google Ads Interface
+- `the-ultimate-google-adwords-training-course/s16-l14-using-googles-default-bid-strategy-clicks-and-optional-max-cpc-bid-limit/` — Using Google's Default Bid Strategy (Clicks) And Optional Max CPC Bid Limit
+- `the-ultimate-google-adwords-training-course/s16-l15-bidding-strategies-target-search-page-location/` — Bidding Strategies: Target Search Page Location
+- `the-ultimate-google-adwords-training-course/s16-l16-bidding-strategies-target-roas/` — Bidding Strategies: Target ROAS
+- `the-ultimate-google-adwords-training-course/s16-l17-bidding-strategies-target-cpa/` — Bidding Strategies: Target CPA
+- `the-ultimate-google-adwords-training-course/s16-l18-bidding-strategies-target-outranking-share/` — Bidding Strategies: Target Outranking Share
+- `the-ultimate-google-adwords-training-course/s16-l19-bidding-strategies-maximize-clicks/` — Bidding Strategies: Maximize Clicks
+- `the-ultimate-google-adwords-training-course/s16-l20-bidding-strategies-enhanced-cpc-bidding/` — Bidding Strategies: Enhanced CPC Bidding
+- `the-ultimate-google-adwords-training-course/s16-l21-bidding-strategies-manual-cpc-bidding/` — Bidding Strategies: Manual CPC Bidding
+- `the-ultimate-google-adwords-training-course/s16-l22-campaign-start-and-end-dates/` — Campaign Start and End Dates
+- `the-ultimate-google-adwords-training-course/s16-l23-introduction-to-dynamic-search-ads/` — Introduction to Dynamic Search Ads!
+- `the-ultimate-google-adwords-training-course/s16-l24-understanding-sitelink-extensions/` — Understanding Sitelink Extensions
+- `the-ultimate-google-adwords-training-course/s16-l25-callout-extensions/` — Callout Extensions
+- `the-ultimate-google-adwords-training-course/s16-l26-call-extensions/` — Call Extensions
+- `the-ultimate-google-adwords-training-course/s16-l27-structured-snippet-extensions/` — Structured Snippet Extensions
+- `the-ultimate-google-adwords-training-course/s16-l28-app-extensions/` — App Extensions
+- `the-ultimate-google-adwords-training-course/s16-l29-message-extensions/` — Message Extensions
+- `the-ultimate-google-adwords-training-course/s16-l30-location-extensions/` — Location Extensions
+- `the-ultimate-google-adwords-training-course/s16-l31-location-setting-exercise/` — Location Setting Exercise
+- `the-ultimate-google-adwords-training-course/s16-l32-promotion-extensions/` — Promotion Extensions
+- `the-ultimate-google-adwords-training-course/s16-l33-price-extensions/` — Price Extensions
+- `the-ultimate-google-adwords-training-course/s16-l34-understanding-ad-rotation-settings/` — Understanding Ad Rotation Settings
+- `the-ultimate-google-adwords-training-course/s16-l35-the-basics-of-ad-scheduling/` — The Basics of Ad Scheduling
+- `the-ultimate-google-adwords-training-course/s16-l36-understanding-the-basics-of-device-targeting/` — Understanding the Basics of Device Targeting
+- `the-ultimate-google-adwords-training-course/s16-l37-understanding-campaign-url-options/` — Understanding Campaign URL Options
+- `the-ultimate-google-adwords-training-course/s17-l01-ad-group-structure-basics-and-organization/` — Ad Group Structure Basics and Organization
+- `the-ultimate-google-adwords-training-course/s17-l02-ad-group-structure-ideas/` — Ad Group Structure Ideas
+- `the-ultimate-google-adwords-training-course/s17-l03-creating-our-first-ad-group-in-google-ads/` — Creating Our First Ad Group in Google Ads
+- `the-ultimate-google-adwords-training-course/s18-l01-the-anatomy-of-google-text-ads/` — The Anatomy of Google Text Ads
+- `the-ultimate-google-adwords-training-course/s18-l02-compliance-in-google-text-ads/` — Compliance in Google Text Ads
+- `the-ultimate-google-adwords-training-course/s18-l03-requesting-a-manual-review-of-your-ads-and-expediting-the-process/` — Requesting a Manual Review of Your Ads and Expediting the Process
+- `the-ultimate-google-adwords-training-course/s18-l04-best-practices-for-successful-text-ads/` — Best Practices for Successful Text Ads
+- `the-ultimate-google-adwords-training-course/s18-l05-real-life-case-ad-copy-case-study-medical-equipment-company/` — Real Life Case Ad Copy Case Study: Medical Equipment Company
+- `the-ultimate-google-adwords-training-course/s18-l06-creating-our-first-ad-in-google-ads/` — Creating Our First Ad in Google Ads
+- `the-ultimate-google-adwords-training-course/s19-l01-configuring-your-billing-details-in-google-ads/` — Configuring Your Billing Details in Google Ads
+- `the-ultimate-google-adwords-training-course/s20-l01-keyword-basics-keywords-vs-queries/` — Keyword Basics: Keywords vs Queries
+- `the-ultimate-google-adwords-training-course/s20-l02-the-basics-of-keyword-research/` — The Basics of Keyword Research
+- `the-ultimate-google-adwords-training-course/s20-l03-the-basics-of-keyword-planning/` — The Basics of Keyword Planning
+- `the-ultimate-google-adwords-training-course/s20-l04-the-basics-of-keyword-organization/` — The Basics of Keyword Organization
+- `the-ultimate-google-adwords-training-course/s20-l05-understanding-keyword-match-types/` — Understanding Keyword Match Types
+- `the-ultimate-google-adwords-training-course/s20-l06-keyword-match-types-broad-match/` — Keyword Match Types: Broad Match
+- `the-ultimate-google-adwords-training-course/s20-l07-keyword-match-types-broad-match-modified/` — Keyword Match Types: Broad Match Modified
+- `the-ultimate-google-adwords-training-course/s20-l08-keyword-match-types-phrase-match/` — Keyword Match Types: Phrase Match
+- `the-ultimate-google-adwords-training-course/s20-l09-keyword-match-types-exact-match/` — Keyword Match Types: Exact Match
+- `the-ultimate-google-adwords-training-course/s20-l10-keyword-match-types-negative-match/` — Keyword Match Types: Negative Match
+- `the-ultimate-google-adwords-training-course/s20-l11-using-the-search-term-report-to-find-negative-keywords-part-1/` — Using the Search Term Report to Find Negative Keywords Part 1
+- `the-ultimate-google-adwords-training-course/s20-l12-using-the-search-term-report-to-find-negative-keywords-part-2/` — Using the Search Term Report to Find Negative Keywords Part 2
+- `the-ultimate-google-adwords-training-course/s20-l13-understanding-negative-keyword-lists/` — Understanding Negative Keyword Lists
+- `the-ultimate-google-adwords-training-course/s20-l14-traffic-sculpting-negative-keywords-at-the-ad-group-level/` — Traffic Sculpting: Negative Keywords at the Ad Group Level
+- `the-ultimate-google-adwords-training-course/s20-l15-adding-negative-keywords-at-the-ad-group-level/` — Adding Negative Keywords at The Ad Group Level
+- `the-ultimate-google-adwords-training-course/s20-l16-traffic-sculpting-using-optmyzr/` — Traffic Sculpting Using OPTMYZR
+- `the-ultimate-google-adwords-training-course/s20-l17-keyword-research-google-suggestions-google-related-searches-and-autocomp/` — Keyword Research: Google Suggestions, Google Related Searches and Autocomplete
+- `the-ultimate-google-adwords-training-course/s20-l18-using-additional-research-tools-to-get-negative-keyword-ideas/` — Using Additional Research Tools to Get Negative Keyword Ideas
+- `the-ultimate-google-adwords-training-course/s20-l19-keyword-research-using-the-google-keyword-planner-1/` — Keyword Research: Using the Google Keyword Planner 1
+- `the-ultimate-google-adwords-training-course/s20-l20-keyword-research-using-the-google-keyword-planner-2/` — Keyword Research: Using the Google Keyword Planner 2
+- `the-ultimate-google-adwords-training-course/s20-l21-keyword-research-downloading-keyword-ideas-from-the-google-keyword-plann/` — Keyword Research: Downloading Keyword Ideas from the Google Keyword Planner
+- `the-ultimate-google-adwords-training-course/s20-l22-keyword-planning-the-6-main-ways-people-communicate-with-search-engines/` — Keyword Planning: The 6 Main Ways People Communicate With Search Engines
+- `the-ultimate-google-adwords-training-course/s20-l23-keyword-planning-understanding-the-buyer-funnel/` — Keyword Planning: Understanding the Buyer Funnel
+- `the-ultimate-google-adwords-training-course/s20-l24-keyword-planning-what-keywords-can-teach-us-about-buying-intent/` — Keyword Planning: What Keywords Can Teach Us About Buying Intent
+- `the-ultimate-google-adwords-training-course/s20-l25-keyword-planning-using-sem-rush-to-get-volume-and-cost-estimates/` — Keyword Planning: Using SEM Rush to Get Volume and Cost Estimates
+- `the-ultimate-google-adwords-training-course/s20-l26-keyword-planning-using-sem-rush-to-get-keyword-ideas-from-your-competito/` — Keyword Planning: Using SEM Rush to Get Keyword Ideas from Your Competitors
+- `the-ultimate-google-adwords-training-course/s20-l27-keyword-planning-using-google-keyword-planner-to-get-volume-cost-estimat/` — Keyword Planning: Using Google Keyword Planner to Get Volume & Cost Estimates
+- `the-ultimate-google-adwords-training-course/s20-l28-keyword-organization-getting-keywords-into-excel-understanding-keyword-t/` — Keyword Organization: Getting Keywords Into Excel & Understanding Keyword Themes
+- `the-ultimate-google-adwords-training-course/s20-l29-keyword-organization-formatting-keywords-in-excel/` — Keyword Organization: Formatting Keywords in Excel
+- `the-ultimate-google-adwords-training-course/s20-l30-keyword-organization-using-pivot-tables-to-visualize-your-campaign-struc/` — Keyword Organization: Using Pivot Tables to Visualize Your Campaign Structure
+- `the-ultimate-google-adwords-training-course/s20-l31-keyword-organization-using-mergewords-to-generate-keyword-lists/` — Keyword Organization: Using Mergewords to Generate Keyword Lists
+- `the-ultimate-google-adwords-training-course/s20-l32-keyword-bidding-basics-setting-your-initial-max-cpc-bids/` — Keyword Bidding Basics: Setting Your Initial Max CPC Bids
+- `the-ultimate-google-adwords-training-course/s21-l01-account-structure-how-to-create-a-new-ad-group-within-your-campaign/` — Account Structure: How To Create A New Ad Group Within Your Campaign
+- `the-ultimate-google-adwords-training-course/s21-l02-importing-your-keyword-lists-from-excel-into-your-new-ad-group/` — Importing Your Keyword Lists From Excel Into Your New Ad Group
+- `the-ultimate-google-adwords-training-course/s21-l03-creating-multiple-relevant-ads-for-your-new-ad-groups/` — Creating Multiple, Relevant Ads For Your New Ad Groups
+- `the-ultimate-google-adwords-training-course/s21-l04-how-to-navigate-between-ad-groups-keywords-and-ads-within-a-campaign/` — How To Navigate Between Ad Groups, Keywords and Ads Within A Campaign
+- `the-ultimate-google-adwords-training-course/s22-l01-introduction-to-the-google-ads-auction/` — Introduction To The Google Ads Auction
+- `the-ultimate-google-adwords-training-course/s22-l02-understanding-quality-score-click-through-rate-and-ad-relevancy/` — Understanding Quality Score: Click Through Rate And Ad Relevancy
+- `the-ultimate-google-adwords-training-course/s22-l03-understanding-quality-score-landing-page-quality/` — Understanding Quality Score: Landing Page Quality
+- `the-ultimate-google-adwords-training-course/s22-l04-understanding-ad-rank-and-how-it-is-calculated/` — Understanding Ad Rank and How It Is Calculated
+- `the-ultimate-google-adwords-training-course/s22-l05-when-you-could-ignore-low-quality-scores-and-when-you-cant/` — When You Could Ignore Low Quality Scores (and when you can't!)
+- `the-ultimate-google-adwords-training-course/s22-l06-advanced-techniques-diagnosing-low-quality-score-with-excel-pivot-tables/` — Advanced Techniques: Diagnosing Low Quality Score With Excel Pivot Tables (1/3)
+- `the-ultimate-google-adwords-training-course/s22-l07-advanced-techniques-diagnosing-low-quality-score-with-excel-pivot-tables/` — Advanced Techniques: Diagnosing Low Quality Score With Excel Pivot Tables (2/3)
+- `the-ultimate-google-adwords-training-course/s22-l08-advanced-techniques-diagnosing-low-quality-score-with-excel-pivot-tables/` — Advanced Techniques: Diagnosing Low Quality Score With Excel Pivot Tables (3/3)
+- `the-ultimate-google-adwords-training-course/s23-l01-navigating-the-google-ads-dashboard/` — Navigating The Google Ads Dashboard
+- `the-ultimate-google-adwords-training-course/s23-l02-how-to-edit-pause-and-enable-keywords-ad-groups-and-campaigns/` — How To Edit, Pause And Enable Keywords, Ad Groups and Campaigns
+- `the-ultimate-google-adwords-training-course/s23-l03-editing-the-essential-campaign-settings/` — Editing The Essential Campaign Settings
+- `the-ultimate-google-adwords-training-course/s23-l04-how-to-create-new-campaigns-that-will-improve-your-results/` — How To Create New Campaigns That Will Improve Your Results
+- `the-ultimate-google-adwords-training-course/s23-l05-how-touse-your-website-to-make-the-best-campaigns-possible/` — How ToUse Your Website To Make The Best Campaigns Possible
+- `the-ultimate-google-adwords-training-course/s23-l06-how-to-set-up-powerful-custom-schedules-for-your-campaigns/` — How To Set Up Powerful Custom Schedules For Your Campaigns
+- `the-ultimate-google-adwords-training-course/s23-l07-understanding-bid-adjustments-and-using-them-to-enhance-your-custom-sche/` — Understanding Bid Adjustments And Using Them To Enhance Your Custom Schedules
+- `the-ultimate-google-adwords-training-course/s24-l01-understanding-negative-keywords-in-depth/` — Understanding Negative Keywords In-Depth
+- `the-ultimate-google-adwords-training-course/s24-l02-using-broad-phrase-and-exact-match-with-your-negative-keywords/` — Using Broad, Phrase and Exact Match With Your Negative Keywords
+- `the-ultimate-google-adwords-training-course/s24-l03-adding-and-removing-negative-keywords-and-negative-keyword-lists/` — Adding and Removing Negative Keywords and Negative Keyword Lists
+- `the-ultimate-google-adwords-training-course/s25-l01-introduction-to-ad-extensions/` — Introduction To Ad Extensions
+- `the-ultimate-google-adwords-training-course/s25-l02-the-benefits-of-using-ad-extensions/` — The Benefits Of Using Ad Extensions
+- `the-ultimate-google-adwords-training-course/s25-l03-different-types-of-ad-extensions-and-best-practices/` — Different Types Of Ad Extensions and Best Practices
+- `the-ultimate-google-adwords-training-course/s25-l04-adding-sitelink-extensions/` — Adding Sitelink Extensions
+- `the-ultimate-google-adwords-training-course/s25-l05-configuring-your-sitelink-extensions-for-the-best-results/` — Configuring Your Sitelink Extensions For The Best Results
+- `the-ultimate-google-adwords-training-course/s25-l06-adding-callout-extensions-and-phone-extensions/` — Adding Callout Extensions And Phone Extensions
+- `the-ultimate-google-adwords-training-course/s26-l01-the-5-primary-forms-of-remarketing/` — The 5 Primary Forms Of Remarketing
+- `the-ultimate-google-adwords-training-course/s26-l02-realizing-the-benefits-and-importance-of-remarketing/` — Realizing The Benefits And Importance Of Remarketing
+- `the-ultimate-google-adwords-training-course/s26-l03-how-to-create-and-add-your-remarketing-tag/` — How To Create And Add Your Remarketing Tag
+- `the-ultimate-google-adwords-training-course/s26-l04-creating-your-first-remarketing-audience/` — Creating Your First Remarketing Audience
+- `the-ultimate-google-adwords-training-course/s26-l05-configuring-your-remarketing-campaign-settings/` — Configuring Your Remarketing Campaign Settings
+- `the-ultimate-google-adwords-training-course/s27-l01-understanding-the-basics-of-conversion-tracking/` — Understanding The Basics Of Conversion Tracking
+- `the-ultimate-google-adwords-training-course/s27-l02-exploring-the-different-conversion-actions-visitors-take-on-your-site/` — Exploring The Different Conversion Actions Visitors Take On Your Site
+- `the-ultimate-google-adwords-training-course/s27-l03-setting-up-conversion-tracking-for-form-submissions/` — Setting Up Conversion Tracking For Form Submissions
+- `the-ultimate-google-adwords-training-course/s27-l04-generating-and-installing-your-conversion-tracking-tag/` — Generating And Installing Your Conversion Tracking Tag
+- `the-ultimate-google-adwords-training-course/s27-l05-understanding-the-basics-of-phone-call-tracking/` — Understanding The Basics Of Phone Call Tracking
+- `the-ultimate-google-adwords-training-course/s27-l06-setting-up-phone-call-tracking-and-understanding-how-to-analyze-conversi/` — Setting Up Phone Call Tracking And Understanding How To Analyze Conversion Data
+- `the-ultimate-google-adwords-training-course/s28-l01-return-on-investment-roi-vs-return-on-ad-spend-roas-important-distinctio/` — Return On Investment (ROI) vs. Return On Ad Spend (ROAS):  Important Distinction
+- `the-ultimate-google-adwords-training-course/s28-l02-how-to-mathematically-calculate-roi-and-roas/` — How To Mathematically Calculate ROI and ROAS
+- `the-ultimate-google-adwords-training-course/s28-l03-calculating-max-cpc-bids-from-your-conversion-rate-and-conversion-value/` — Calculating Max CPC Bids From Your Conversion Rate And Conversion Value
+- `the-ultimate-google-adwords-training-course/s28-l04-calculating-profitable-keyword-bids-based-on-revenue-per-click/` — Calculating Profitable Keyword Bids Based On Revenue Per Click
+- `the-ultimate-google-adwords-training-course/s29-l01-introduction-to-adwords-scripts-what-are-scripts/` — Introduction To AdWords Scripts - What Are Scripts?
+- `the-ultimate-google-adwords-training-course/s29-l02-bidding-to-average-position-adwords-script-part-1/` — Bidding To Average Position AdWords Script Part 1
+- `the-ultimate-google-adwords-training-course/s29-l03-bidding-to-average-position-adwords-script-part-2/` — Bidding To Average Position AdWords Script Part 2
+- `the-ultimate-google-adwords-training-course/s30-l01-conclusion/` — Conclusion
+- `the-ultimate-google-adwords-training-course/s31-l01-part-1-understanding-search-queries-and-what-we-learn-from-searcher-lang/` — Part 1. Understanding Search Queries and What We Learn From Searcher Languagage
+- `the-ultimate-google-adwords-training-course/s31-l02-part-2-accessing-the-search-query-report-and-understanding-long-tail-key/` — Part 2. Accessing The Search Query Report and Understanding Long Tail Keywords
+- `the-ultimate-google-adwords-training-course/s31-l03-part-3-qualifying-your-ad-text-and-how-to-a-b-split-test-your-ads/` — Part 3. Qualifying Your Ad Text and How To A/B Split Test Your Ads
+
+### they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing
+
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l01-course-overview/` — Course Overview
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l02-1-a-very-different-way-of-looking-at-business-marketing-and-trust/` — 1. A Very Different Way of Looking at Business, Marketing, and Trust
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l03-the-origin-of-they-ask-you-answer/` — The Origin of 'They Ask, You Answer'
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l04-the-buyers-zero-moment-of-truth/` — The Buyers Zero Moment of Truth
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l05-were-different/` — We're Different
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l06-a-revolutionary-marketing-strategy-answer-customers-questions/` — A Revolutionary Marketing Strategy: Answer Customers' Questions
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l07-developing-your-first-100-blog-article-topics/` — Developing Your First 100+ Blog Article Topics
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l08-the-carmax-effect-and-how-to-have-a-healthy-relationship-with-fear/` — The 'CarMax Effect' and How to Have a Healthy Relationship with Fear
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l09-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l02-the-5-questions-that-buyers-obsess-over/` — The 5 Questions That Buyers Obsess Over
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l03-the-big-5-cost-and-price/` — The Big 5: Cost and Price
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l04-the-big-5-problems/` — The Big 5: Problems
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l05-the-big-5-versus-and-comparison/` — The Big 5:Versus and Comparison
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l06-the-big-5-reviews-and-best-in-class/` — The Big 5: Reviews and Best in Class
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l07-who-should-influence-what-we-say-online/` — Who Should Influence What We Say Online?
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l08-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l02-7-benefits-of-sales-teams-embracing-they-ask-you-answer/` — 7 Benefits of Sales Teams Embracing They Ask, You Answer
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l03-the-magic-number-30/` — The Magic Number 30
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l04-content-never-sleeps/` — Content Never Sleeps
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l05-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l02-insourcing/` — Insourcing
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l03-buy-in-from-top-to-bottom/` — Buy-in from Top to Bottom
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l04-the-content-manager/` — The Content Manager
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l05-using-the-right-tools/` — Using the Right Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l06-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l02-real-time-conversations/` — Real-Time Conversations
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l03-self-selection-tools/` — Self-Selection Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s06-l01-bonus-lecture/` — Bonus Lecture
+
+<!-- END AUTO-INDEX -->

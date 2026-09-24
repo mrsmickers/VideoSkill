@@ -22,7 +22,7 @@ def _seed_prepared_slug(tmp_path: Path) -> Path:
         "source_video": str(slug / ".source.mp4"),
         "source_audio": str(slug / ".audio.mp3"),
     }))
-    (tmp_path / "CLAUDE.md").write_text(
+    (tmp_path / "library-index.md").write_text(
         "# Library\n\n<!-- BEGIN AUTO-INDEX -->\nold\n<!-- END AUTO-INDEX -->\n"
     )
     return slug
@@ -46,7 +46,7 @@ def test_finalize_extracts_frames_writes_meta_cleans_up(tmp_path, mocker):
         "finalize",
         str(slug),
         "--frames", "00:30,02:15",
-        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--index", str(tmp_path / "library-index.md"),
         "--library", str(tmp_path / "library"),
     ])
     assert rc == 0
@@ -67,10 +67,28 @@ def test_finalize_extracts_frames_writes_meta_cleans_up(tmp_path, mocker):
     assert not (slug / ".audio.mp3").exists()
     assert not (slug / ".work-state.json").exists()
 
-    # CLAUDE.md regenerated
-    claude_text = (tmp_path / "CLAUDE.md").read_text()
-    assert "old" not in claude_text
-    assert "kpoi-talk" in claude_text
+    # Standalone index regenerated
+    index_text = (tmp_path / "library-index.md").read_text()
+    assert "old" not in index_text
+    assert "kpoi-talk" in index_text
+
+
+def test_finalize_updates_standalone_index_by_default(tmp_path, monkeypatch):
+    slug = _seed_prepared_slug(tmp_path)
+    agents_md = tmp_path / "AGENTS.md"
+    agents_md.write_text("# Agent instructions\n")
+    monkeypatch.setattr(ingest_cli, "__file__", str(tmp_path / "ingest.py"))
+
+    rc = ingest_cli.run([
+        "finalize", str(slug),
+        "--frames", "",
+        "--library", str(tmp_path / "library"),
+    ])
+
+    assert rc == 0
+    assert "kpoi-talk" in (tmp_path / "library-index.md").read_text()
+    assert agents_md.read_text() == "# Agent instructions\n"
+    assert not (tmp_path / "CLAUDE.md").exists()
 
 
 def test_finalize_errors_when_state_missing(tmp_path):
@@ -78,7 +96,7 @@ def test_finalize_errors_when_state_missing(tmp_path):
     slug.mkdir(parents=True)
     rc = ingest_cli.run([
         "finalize", str(slug),
-        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--index", str(tmp_path / "library-index.md"),
         "--library", str(tmp_path / "library"),
     ])
     assert rc == 5
@@ -93,7 +111,7 @@ def test_finalize_warns_on_near_identical_frames(tmp_path, static_clip, capsys):
         "finalize",
         str(slug),
         "--frames", "00:00,00:02",
-        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--index", str(tmp_path / "library-index.md"),
         "--library", str(tmp_path / "library"),
     ])
     out = capsys.readouterr().out
@@ -112,7 +130,7 @@ def test_finalize_empty_frames_skips_extraction(tmp_path, mocker):
         "finalize",
         str(slug),
         "--frames", "",
-        "--claude-md", str(tmp_path / "CLAUDE.md"),
+        "--index", str(tmp_path / "library-index.md"),
         "--library", str(tmp_path / "library"),
     ])
     assert rc == 0
@@ -131,6 +149,6 @@ def test_finalize_empty_frames_skips_extraction(tmp_path, mocker):
     # frames/ directory was NOT created (no extraction happened)
     assert not (slug / "frames").exists()
 
-    # CLAUDE.md still regenerated
-    claude_text = (tmp_path / "CLAUDE.md").read_text()
-    assert "kpoi-talk" in claude_text
+    # Standalone index still regenerated
+    index_text = (tmp_path / "library-index.md").read_text()
+    assert "kpoi-talk" in index_text

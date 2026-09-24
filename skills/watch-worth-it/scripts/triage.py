@@ -277,7 +277,7 @@ def build_report(info: dict, segments: list[dict], transcript_source: str,
     root = _repo_root()
     if root:
         lines.append("")
-        lines.append(f"library_index={root / 'CLAUDE.md'}")
+        lines.append(f"library_index={root / 'library-index.md'}")
         lines.append(f"library_root={root / 'library'}")
 
     if frames:

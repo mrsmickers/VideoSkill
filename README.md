@@ -101,8 +101,8 @@ runs `ingest.py prepare` for each URL, reads the transcripts, writes
 `summary.md` + `extracted.md`, picks frame timestamps, and runs `ingest.py
 finalize`.
 
-After ingesting, the top-level `CLAUDE.md` is regenerated as an index of the
-library so a future Claude Code session sees the whole library on chat open.
+After ingesting, the top-level `library-index.md` is regenerated from the
+local library. `AGENTS.md` tells agents when to read it.
 
 ## Using the library
 
@@ -110,7 +110,7 @@ library so a future Claude Code session sees the whole library on chat open.
 
 Open Claude Code in this folder and ask, e.g.
 *"what would Daniel Priestley say about LinkedIn posts?"* Claude reads
-the index in `CLAUDE.md`, greps `summary.md` / `extracted.md` for matches,
+the index in `library-index.md`, greps `summary.md` / `extracted.md` for matches,
 opens the relevant files, and answers with citations like
 `(daniel-priestley/<slug>, 14:32)`. The questions stay yours, the answers
 stay attributed.
@@ -122,7 +122,7 @@ similar. Claude reads every `extracted.md` and `summary.md` under that
 creator's subfolder — frameworks, vocabulary, recurring stories — and
 stays in character.
 
-Behaviour rules baked into `CLAUDE.md`:
+Behaviour rules in `AGENTS.md`:
 
 - **The library is the primary source of truth.** Specific claims —
   frameworks, statistics, anecdotes, quotes — must come from a video and
@@ -298,7 +298,8 @@ is codified in `skills/publish-sop/SKILL.md`, so your output will match.)
 - `scripts/upload-frames-to-notion.py` — manual: frames → Notion private storage
 - `scripts/upload-frames-to-r2.py` — manual: frames → public URLs
 - `library/<creator-or-topic>/<slug>/` — ingested content (gitignored)
-- `CLAUDE.md` — agent instructions + auto-generated library index
+- `AGENTS.md` — agent instructions
+- `library-index.md` — auto-generated library catalogue
 - `tests/` — pytest suite (no network; ffmpeg-synthesised clips)
 - `docs/superpowers/` — design specs and implementation plans
 

@@ -43,15 +43,15 @@ def render_index_section(grouped: dict[str, list[dict]]) -> str:
     return "\n".join(lines)
 
 
-def regenerate(*, claude_md_path: Path, library_root: Path) -> None:
+def regenerate(*, index_path: Path, library_root: Path) -> None:
     grouped = scan_library(library_root)
     section = render_index_section(grouped)
 
-    if not claude_md_path.exists():
-        claude_md_path.write_text(_default_template(section))
+    if not index_path.exists():
+        index_path.write_text(_default_template(section))
         return
 
-    text = claude_md_path.read_text()
+    text = index_path.read_text()
     pattern = re.compile(
         re.escape(BEGIN_MARKER) + r".*?" + re.escape(END_MARKER),
         flags=re.DOTALL,
@@ -61,7 +61,7 @@ def regenerate(*, claude_md_path: Path, library_root: Path) -> None:
         text = pattern.sub(replacement, text)
     else:
         text = text.rstrip() + f"\n\n{replacement}\n"
-    claude_md_path.write_text(text)
+    index_path.write_text(text)
 
 
 def _default_template(section: str) -> str:
@@ -81,6 +81,6 @@ def _default_template(section: str) -> str:
 if __name__ == "__main__":
     project_root = Path(__file__).resolve().parent.parent
     regenerate(
-        claude_md_path=project_root / "CLAUDE.md",
+        index_path=project_root / "library-index.md",
         library_root=project_root / "library",
     )

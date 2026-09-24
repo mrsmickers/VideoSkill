@@ -47,8 +47,8 @@ def test_regenerate_replaces_only_marked_section(tmp_path):
     library.mkdir()
     _write_video(library, "x", "v1", title="V1")
 
-    claude_md = tmp_path / "CLAUDE.md"
-    claude_md.write_text(
+    index_path = tmp_path / "library-index.md"
+    index_path.write_text(
         "# VideoSkill library\n"
         "\n"
         "Header prose, user-edited.\n"
@@ -60,9 +60,9 @@ def test_regenerate_replaces_only_marked_section(tmp_path):
         "Footer prose.\n"
     )
 
-    index.regenerate(claude_md_path=claude_md, library_root=library)
+    index.regenerate(index_path=index_path, library_root=library)
 
-    text = claude_md.read_text()
+    text = index_path.read_text()
     assert "Header prose, user-edited." in text
     assert "Footer prose." in text
     assert "old content" not in text
@@ -76,15 +76,15 @@ def test_render_index_section_empty_library():
     assert "Empty" in section
 
 
-def test_regenerate_creates_claude_md_when_missing(tmp_path):
+def test_regenerate_creates_index_when_missing(tmp_path):
     library = tmp_path / "library"
     library.mkdir()
     _write_video(library, "x", "v1", title="V1")
-    claude_md = tmp_path / "CLAUDE.md"
+    index_path = tmp_path / "library-index.md"
 
-    index.regenerate(claude_md_path=claude_md, library_root=library)
+    index.regenerate(index_path=index_path, library_root=library)
 
-    text = claude_md.read_text()
+    text = index_path.read_text()
     assert "VideoSkill library" in text
     assert "<!-- BEGIN AUTO-INDEX -->" in text
     assert "v1" in text
