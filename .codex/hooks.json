@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/simonsmyth/Projects/VideoSkill/.claude/worktrees/zen-noether-78a239/.codex/hooks/symlink-library.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}

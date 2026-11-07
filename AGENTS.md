@@ -1,0 +1,219 @@
+# VideoSkill library
+
+Library of expert video content. Each video lives at `library/<creator-or-topic>/<slug>/`
+with `meta.json`, `transcript.md`, `summary.md`, `extracted.md`, and `frames/`.
+
+## For agents on a fresh clone
+
+If the **Library** section at the bottom of this file lists any videos, the
+project is set up — skip to **How to use this library**.
+
+Otherwise, walk the user through these steps in order. Don't move on until
+each step passes.
+
+### 1. Check prereqs
+
+Run these and report which are missing:
+
+```bash
+python3 --version    # need 3.12 or newer
+ffmpeg -version | head -1
+yt-dlp --version
+```
+
+If anything is missing, ask the user to install. macOS shortcut:
+`brew install ffmpeg yt-dlp`. Python 3.12+ is usually already there.
+
+### 2. Create the venv and install Python deps
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. Get a Groq API key from the user
+
+Required for transcription. Free account at
+[console.groq.com](https://console.groq.com); ~$0.04 per audio-hour. Then:
+
+```bash
+cp .env.example .env
+# write GROQ_API_KEY=<their-key> into .env
+```
+
+### 4. Load env into the current shell
+
+```bash
+set -a; source .env; set +a
+```
+
+Confirm with `echo $GROQ_API_KEY` — should print the key (not empty).
+
+### 5. (Optional) Pick a frame-hosting path if they want to publish SOPs
+
+Skip this entirely if the user just wants the local library and isn't yet
+publishing anywhere — ingestion works without it.
+
+If they do want to publish to Notion, ask which path fits:
+
+- **Notion file uploads (default, supports private content).** Frames go
+  into the user's Notion workspace's private storage. Setup: create an
+  internal integration at notion.so/profile/integrations, give it access
+  to the target page via *Connections*, paste the token into `.env` as
+  `VIDEOSKILL_NOTION_API_KEY=…`. Script: `scripts/upload-frames-to-notion.py`.
+- **Cloudflare R2 (public URLs).** Use this only if the source videos are
+  public *and* the user wants frames embeddable outside Notion (blog posts,
+  Slack, GitHub READMEs). Setup: create an R2 bucket, enable the managed
+  `r2.dev` public domain, create an R2 API token, fill the `VIDEOSKILL_R2_*`
+  vars in `.env`. Script: `scripts/upload-frames-to-r2.py`.
+
+If unsure, recommend the Notion path — quicker to set up, covers private
+content, and the resulting page looks the same either way.
+
+### 6. Smoke-test on a short video
+
+Before a big batch, ingest one 5–10 minute video to validate the pipeline.
+Any public video source `yt-dlp` supports works — YouTube, Vimeo, Twitter/X,
+TikTok, LinkedIn, Twitch, conference recordings, etc. Ask the user for a URL,
+then follow **How to ingest new content** below.
+
+---
+
+## How to use this library
+
+This library supports three distinct usage modes. Detect which the user is
+asking for from their phrasing, and follow the rules for that mode.
+
+### Mode 1 — Question answering ("what would <creator> say about X?")
+
+When the user asks a focused question about a creator's content:
+
+1. Skim the auto-index at the bottom of this file to spot the relevant
+   subfolder.
+2. `grep -l <topic> library/<sub>/*/summary.md library/<sub>/*/extracted.md`
+   to find matching videos quickly. `extracted.md` is where frameworks,
+   templates and quotes live; `summary.md` is the lighter overview.
+3. Read the matching `summary.md` and `extracted.md` files.
+4. Open `transcript.md` only if you need exact wording — quote with the
+   `[mm:ss]` timestamp.
+5. If the question is visual, look at `frames/` for the relevant timestamp.
+6. Cite as `(daniel-priestley/<slug>, 14:32)` so the user can jump back
+   to source.
+
+### Mode 2 — Persona / "act as" ("act as Daniel Priestley")
+
+When the user asks you to role-play, embody, or speak as a creator:
+
+1. Read **every** `summary.md` and `extracted.md` under that creator's
+   subfolder. These give you the frameworks, recurring vocabulary, do's
+   and don'ts, and the verbatim quote bank. Open `transcript.md` files
+   selectively if you need tone or speech patterns.
+2. Adopt the creator's voice: their framings, preferred vocabulary,
+   typical examples and turn of phrase. Stay in character for the rest
+   of the conversation unless the user breaks character.
+3. **The library is the primary source of truth.** When making any
+   specific claim — a framework, a number, an anecdote, a quote — cite
+   the source video as `(creator/slug, mm:ss)`. Quotes especially must
+   come from `extracted.md` or `transcript.md`.
+4. **Never invent quotes, statistics, or specific stories** and put them
+   in the creator's mouth. If the library doesn't contain it, the persona
+   doesn't say it. Fabricated quotes attributed to a real person are the
+   one failure mode that ruins this mode.
+5. When the user asks something the library doesn't cover:
+   - Flag it explicitly first, in character: *"I haven't covered this on
+     camera, but…"* or *"that's not something I've gone deep on in
+     videos, but my general view…"*
+   - Then answer from general public knowledge of the person, not from
+     specifics that would imply a video source you can't cite.
+6. If the user pushes for a citation you genuinely can't make from the
+   library, say so honestly rather than fabricating one.
+
+### Mode 3 — Build a skill or SOP from a creator's body of work
+
+When the user asks you to *"create a skill from <creator>'s content"*,
+*"build an SOP from <slug>"*, or similar:
+
+1. Read every `extracted.md` under the relevant scope (whole creator
+   folder for skills, single slug folder for SOPs). `extracted.md` is
+   the spine of any output here — frameworks, templates, do's/don'ts,
+   verbatim quotes are already structured.
+2. For a Codex skill: invoke `anthropic-skills:skill-creator` if
+   it's installed, otherwise write `SKILL.md` directly into
+   `.Codex/skills/<creator>-<topic>/`. Cite source videos in the skill
+   prose so it stays traceable.
+3. For a Notion SOP: see "How to publish a slug folder as a Notion SOP"
+   in the README — the gist is *write the markdown body using
+   `extracted.md` as the spine*, then run `scripts/upload-frames-to-notion.py`
+   with `--page-id` to embed frames at the right SOP steps.
+
+## How to ingest new content
+
+Make sure env is loaded first: `set -a; source .env; set +a`. Then for each
+URL the user gives you:
+
+1. **Prepare** — `.venv/bin/python ingest.py prepare <URL> --to <subfolder-name>`.
+   Downloads, transcribes, writes `transcript.md`. Output ends with
+   `slug_folder=<path>`.
+2. **Read** the produced `transcript.md`.
+3. **Write `summary.md`** — ~200-word overview + 5–10 timestamped key points.
+4. **Write `extracted.md`** — named frameworks, step-by-step processes,
+   verbatim templates/scripts, verbatim quotes with timestamps, explicit
+   do's/don'ts. The quality bar here is high; this is the file Codex will
+   read to answer questions later.
+5. **Pick 8–15 frame timestamps** that capture the most important visuals —
+   whiteboards, diagrams, key text overlays. Animated whiteboards build up
+   over time, so target the *end* of each animated section, not the middle.
+   Frames are auto-capped at 1600px to stay under Anthropic's many-image
+   dimension limit.
+6. **Finalize** — `.venv/bin/python ingest.py finalize <slug_folder> --frames "00:35,04:35,..."`.
+   Extracts frames, writes `meta.json`, regenerates this `AGENTS.md`,
+   cleans up the source mp4.
+
+Design notes: `docs/superpowers/specs/2026-04-29-videoskill-design.md`.
+Build plan: `docs/superpowers/plans/2026-04-29-videoskill-implementation.md`.
+
+<!-- BEGIN AUTO-INDEX -->
+## Library
+
+### daniel-priestley
+
+- `daniel-priestley/the-new-rules-of-business-ai-changes-everything/` — The New Rules of Business (AI Changes Everything)
+- `daniel-priestley/why-you-must-build-a-youtube-channel/` — Why You Must Build a YouTube Channel
+
+### they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing
+
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l01-course-overview/` — Course Overview
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l02-1-a-very-different-way-of-looking-at-business-marketing-and-trust/` — 1. A Very Different Way of Looking at Business, Marketing, and Trust
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l03-the-origin-of-they-ask-you-answer/` — The Origin of 'They Ask, You Answer'
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l04-the-buyers-zero-moment-of-truth/` — The Buyers Zero Moment of Truth
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l05-were-different/` — We're Different
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l06-a-revolutionary-marketing-strategy-answer-customers-questions/` — A Revolutionary Marketing Strategy: Answer Customers' Questions
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l07-developing-your-first-100-blog-article-topics/` — Developing Your First 100+ Blog Article Topics
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l08-the-carmax-effect-and-how-to-have-a-healthy-relationship-with-fear/` — The 'CarMax Effect' and How to Have a Healthy Relationship with Fear
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s01-l09-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l02-the-5-questions-that-buyers-obsess-over/` — The 5 Questions That Buyers Obsess Over
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l03-the-big-5-cost-and-price/` — The Big 5: Cost and Price
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l04-the-big-5-problems/` — The Big 5: Problems
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l05-the-big-5-versus-and-comparison/` — The Big 5:Versus and Comparison
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l06-the-big-5-reviews-and-best-in-class/` — The Big 5: Reviews and Best in Class
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l07-who-should-influence-what-we-say-online/` — Who Should Influence What We Say Online?
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s02-l08-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l02-7-benefits-of-sales-teams-embracing-they-ask-you-answer/` — 7 Benefits of Sales Teams Embracing They Ask, You Answer
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l03-the-magic-number-30/` — The Magic Number 30
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l04-content-never-sleeps/` — Content Never Sleeps
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s03-l05-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l02-insourcing/` — Insourcing
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l03-buy-in-from-top-to-bottom/` — Buy-in from Top to Bottom
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l04-the-content-manager/` — The Content Manager
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l05-using-the-right-tools/` — Using the Right Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s04-l06-assignment/` — Assignment
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l01-introduction/` — Introduction
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l02-real-time-conversations/` — Real-Time Conversations
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s05-l03-self-selection-tools/` — Self-Selection Tools
+- `they-ask-you-answer-marcus-sheridan-digital-sales-and-marketing/s06-l01-bonus-lecture/` — Bonus Lecture
+
+<!-- END AUTO-INDEX -->
